@@ -7,5 +7,6 @@ namespace Model
 {
     public class Booking
     {
+
     }
 }
