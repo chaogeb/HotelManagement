@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelManagementSystem"
         mc:Ignorable="d"
-        Title="Hotel Management System" Height="350" Width="525">
-    <Grid>
-        
+        Title="Hotel Management System" SizeToContent="WidthAndHeight" MinWidth="800" MinHeight="450">
+    <Grid ShowGridLines="True">
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="400" MinWidth="750">
+            <TabItem x:Name="CheckInCheckOutTab" Header="入住/离店" VerticalAlignment="Bottom" Width="130" Height="29">
+                
+            </TabItem>
+            <TabItem x:Name="NewReservationTab" Header="预订" Width="130" Height="29">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem x:Name="RegistryTab" Header="记录查询" Width="130" Height="29">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            
+        </TabControl>
     </Grid>
 </Window>
