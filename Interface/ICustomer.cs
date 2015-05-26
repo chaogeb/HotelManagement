@@ -6,23 +6,12 @@ namespace Interface
     // Made by chaogeb
     public interface ICustomer
     {
-        int ID { get; }
-
         string Name { get; set; }
-
-        string StreetName { get; set; }
-
+        string Gender { get; set; }
+        int Age { get; set; }
+        string ID { get; set; }
+        string Company { get; set; }
         string City { get; set; }
-
-        string Country { get; set; }
-
-        string Phone { get; set; }
-
-        string Fax { get; set; }
-
-        string Email { get; set; }
-
         CustomerStatus CStatus { get; set; }
-
     }
 }
