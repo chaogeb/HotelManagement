@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:HotelManagementSystem"
         mc:Ignorable="d"
         Title="Hotel Management System" SizeToContent="WidthAndHeight" MinWidth="800" MinHeight="450">
-    <Grid Background="#FFE5E5E5" ShowGridLines="True">
-        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="400" MinWidth="750">
+    <Grid Background="#FFE5E5E5">
+        <TextBlock Name="TimeBlock" Loaded="ShowTimeBlock" Margin="700,10,0,0">00:00:00</TextBlock>
+        <ProgressBar Name="TimeProgressBar" Maximum="160" Height="5" VerticalAlignment="Top" IsIndeterminate="False"></ProgressBar>
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="400" MinWidth="750" Margin="0,3,0,0">
 
             <TabItem x:Name="HallTab" Header="大厅" VerticalAlignment="Bottom" Width="130" Height="29">
                 <Grid Background="#FFE5E5E5"/>
@@ -16,27 +18,72 @@
             <TabItem x:Name="NewReservationTab" Header="预订" Width="130">
                 <Grid x:Name="CustomerTab" Background="#FFE5E5E5">
                     <TabControl x:Name="BookingTab" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="370" MinWidth="750">
-                        <TabItem Header="查询可用房间" VerticalAlignment="Bottom" Width="100" Height="25">
-                            <Grid Background="#FFE5E5E5"/>
+                        <TabItem x:Name="AvailabilityTab" Header="查询可用房间" VerticalAlignment="Bottom" Width="100" Height="25">
+                            <Grid Background="#FFE5E5E5">
+                                <DockPanel Margin="0,0,0,37" LastChildFill="True">
+                                    <StackPanel Orientation="Vertical" MinWidth="200">
+                                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                                            <Label x:Name="FromDateLabel" Content="入住日期：" Margin="10,10,5,0" Width="70"/>
+                                            <DatePicker x:Name="AvailabilityFromDateDpr" Margin="0,10,0,0" Width="115"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="ToDateLabel" Content="离店日期：" Margin="10,0,5,0" Width="70"/>
+                                            <DatePicker x:Name="AvailabilityToDateDpr" Margin="0,0,0,0" Width="115"/>
+                                        </StackPanel>
+                                        <StackPanel Height="25" Orientation="Horizontal" Margin="0,10">
+                                            <Label Content="房间类型：" Margin="10,0,5,0"/>
+                                            <ComboBox x:Name="RoomTypeCombo" Width="115"/>
+                                        </StackPanel>
+                                        <Button x:Name="AvailabilityCheckBtn" Content="查找空闲房间" Margin="10,0,0,0" Width="185" Click="CheckAvailabilityBtn_Click" Height="27"/>
+                                    </StackPanel>
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,10">
+                                        <ListView x:Name="RoomsListView" SelectionChanged="RoomsListView_SelectionChanged">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Width="70" Header="房间号" DisplayMemberBinding="{Binding RoomNum}"  />
+                                                    <GridViewColumn Width="80" Header="房间类型" DisplayMemberBinding="{Binding RType}"  />
+                                                    <GridViewColumn Width="50" Header="价格" DisplayMemberBinding="{Binding Price}"  />
+                                                    <GridViewColumn Width="75" Header="状态" DisplayMemberBinding="{Binding RStatus}"  />
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                    </Grid>
+                                </DockPanel>
+                                <Button x:Name="AvailabilityNextBtn" Content="下一步" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height ="29" Width="100" Margin="0,0,10,10" Click="GoToCustomerDetailsBtn_Click"/>
+                            </Grid>
                         </TabItem>
                         <TabItem x:Name="CustomerDetailsTab" Header="旅客信息" Width="100">
-                            <Grid Background="#FFE5E5E5" Margin="0,0,0,1">
-                                <Button x:Name="BackReservation" Content="Back" HorizontalAlignment="Left" Margin="10,305,0,0" VerticalAlignment="Top" Width="100" Click="BackToAvailibiltyBtn_Click" Height="29"/>
-                                <Button x:Name="NextReservationButton" Content="Book" HorizontalAlignment="Left" Margin="668,305,0,0" VerticalAlignment="Top" Width="100" Click="GoToReceiptBtn_Click" Height="29"/>
-                                <TextBox x:Name="CustomerDetailsEmailTbx" HorizontalAlignment="Left" Height="23" Margin="122,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238"/>
-                                <Label x:Name="CustomerDetailsEmailLbl" Content="Email" HorizontalAlignment="Left" Margin="79,16,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.55,2.188" Width="43"/>
-                                <Label x:Name="CustomerDetailsFirstNameLbl" Content="First Name" HorizontalAlignment="Left" Margin="52,44,0,0" VerticalAlignment="Top" Width="70"/>
-                                <TextBox x:Name="CustomerDetailsFirstNameTbx" HorizontalAlignment="Left" Height="23" Margin="122,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238" IsEnabled="False"/>
-                                <Label x:Name="CustomerDetailsLastNameLbl" Content="Last Name" HorizontalAlignment="Left" Margin="52,75,0,0" VerticalAlignment="Top" Width="65"/>
-                                <TextBox x:Name="CustomerDetailsLastnameTbx" HorizontalAlignment="Left" Height="23" Margin="122,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238" IsEnabled="False"/>
-                                <Label x:Name="CustomerDetailsCreditCardNoLbl" Content="Credit Card Number" HorizontalAlignment="Left" Margin="5,103,0,0" VerticalAlignment="Top" Width="117"/>
-                                <TextBox x:Name="CustomerDetailsCreditCardNoTbx" HorizontalAlignment="Left" Height="23" Margin="122,103,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238" RenderTransformOrigin="0.534,0.106" IsEnabled="False"/>
-                                <Label x:Name="CustomerDetailsPhoneNumberLbl" Content="Phone Number" HorizontalAlignment="Left" Margin="31,134,0,0" VerticalAlignment="Top" Width="91" RenderTransformOrigin="0.442,-1.286"/>
-                                <TextBox x:Name="CustomerDetailsPhoneCountryCodeTbx" HorizontalAlignment="Left" Height="23" Margin="122,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40" RenderTransformOrigin="1.552,1.937" IsEnabled="False"/>
-                                <TextBox x:Name="CustomerDetailsPhoneNoTbx" HorizontalAlignment="Left" Height="23" Margin="122,133,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238" IsEnabled="False"/>
-                                <Button x:Name="CustomerDetailsSearchBtn" Content="Search" HorizontalAlignment="Left" Height="31" Margin="374,125,0,0" VerticalAlignment="Top" Width="202" Click="SearchBtn_Click" RenderTransformOrigin="0.958,0.391"/>
-                                <CheckBox x:Name="CustomerDetailsRegisterChx" Content="Register new customer" HorizontalAlignment="Left" Height="24" Margin="374,96,0,0" VerticalAlignment="Top" Width="202" Checked="CheckBoxRegister_Checked" Unchecked="CheckBoxRegister_Unchecked"/>
-                                <Label x:Name="CustomerDetailsPhoneNumberLbl_Copy" Content="Country Code(+xx)" HorizontalAlignment="Left" Margin="10,161,0,0" VerticalAlignment="Top" Width="112" RenderTransformOrigin="0.442,-1.286"/>
+                            <Grid Background="#FFE5E5E5">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="600" Height="300">
+                                    <StackPanel Orientation="Vertical" MinWidth="380">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="CustomerDetailsEmailLbl" Content="电子邮件：" Margin="60,16,5,0" Width="70"/>
+                                            <TextBox x:Name="CustomerDetailsEmailTbx" Height="23" Margin="0,16,0,0" TextWrapping="Wrap" Width="238"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="CustomerDetailsNameLbl" Content="姓名：" Margin="84,8,5,0" Width="46"/>
+                                            <TextBox x:Name="CustomerDetailsNameTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="CustomerDetailsCreditCardNoLbl" Content="身份证：" Margin="72,8,5,0" Width="58"/>
+                                            <TextBox x:Name="CustomerDetailsCreditCardNoTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="CustomerDetailsPhoneNumberLbl" Content="联系电话：" HorizontalAlignment="Left" Margin="60,8,5,0" Width="70"/>
+                                            <TextBox x:Name="CustomerDetailsPhoneNoTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="CustomerDetailsPhoneNumberLbl_Copy" Content="国际区号(+xx)：" Margin="31,8,5,0" Width="99"/>
+                                            <TextBox x:Name="CustomerDetailsPhoneCountryCodeTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="40" IsEnabled="False"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <CheckBox x:Name="CustomerDetailsRegisterChx" Content="注册新顾客" Height="23" Margin="10,88,0,0" Width="185" Checked="CheckBoxRegister_Checked" Unchecked="CheckBoxRegister_Unchecked"/>
+                                        <Button x:Name="CustomerDetailsSearchBtn" Content="搜索" Height="27" Margin="10,8,0,0" Width="185" Click="SearchBtn_Click"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Button x:Name="BackReservation" Content="返回" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="29" Width="100" Margin="10,0,0,10" Click="BackToAvailibiltyBtn_Click"/>
+                                <Button x:Name="NextReservationButton" Content="下一步" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="29" Width="100" Margin="0,0,10,10" Click="GoToReceiptBtn_Click"/>
                             </Grid>
                         </TabItem>
                         <TabItem Header="生成订单" Width="100">
@@ -46,7 +93,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem x:Name="CheckInCheckOutTab" Header="入住/离店" Width="130">
+            <TabItem x:Name="CheckInCheckOutTab" Header="入住/退房" Width="130">
                 <Grid Background="#FFE5E5E5"/>
             </TabItem>
 
