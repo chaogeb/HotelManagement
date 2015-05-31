@@ -52,7 +52,7 @@ namespace ControllerLayer
             }
         }
 
-        internal void DatabaseController(string user, string pass)
+        internal void DatabaseController()
         {
             string dbPath = "Data Source =" + Environment.CurrentDirectory + "/HotelDataBase.db";
             sqlCon = new SQLiteConnection(dbPath);
