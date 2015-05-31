@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
+# Blend for Visual Studio 14
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelManagementSystem", "HotelManagementSystem\HotelManagementSystem.csproj", "{91123B31-22D0-415B-A6DD-165C063350A1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C7FE3CB0-F36C-4B94-A066-6D983250A952} = {C7FE3CB0-F36C-4B94-A066-6D983250A952}
+		{D511A8F5-2315-4EA0-BF84-F49F4C0ECB91} = {D511A8F5-2315-4EA0-BF84-F49F4C0ECB91}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interface", "Interface\Interface.csproj", "{D511A8F5-2315-4EA0-BF84-F49F4C0ECB91}"
 EndProject
