@@ -4,7 +4,9 @@ School project using C#. BUPT.
 
 A WPF gui of hotel management system.
 
-Developed with Visual Studio 2013 & [SQLite][1].
+Developed with Visual Studio 2013.
+
+Require .Net Framework 4 & [SQLite][1].
 
 View SQLite database with [DB Browser for SQLite][2]
 
@@ -18,6 +20,6 @@ View SQLite database with [DB Browser for SQLite][2]
 
 [2]: http://sqlitebrowser.org/
 
-[3]: http://system.data.sqlite.org/downloads/1.0.97.0/sqlite-netFx451-setup-bundle-x86-2013-1.0.97.0.exe " sqlite-netFx451-setup-bundle-x86-2013-1.0.97.0.exe "
+[3]: http://system.data.sqlite.org/downloads/1.0.97.0/sqlite-netFx40-binary-bundle-Win32-2010-1.0.97.0.zip " sqlite-netFx40-binary-bundle-Win32-2010-1.0.97.0.zip "
 
 [4]: https://github.com/sqlitebrowser/sqlitebrowser/releases/download/v3.6.0/sqlitebrowser-3.6.0v3-win64.exe " sqlitebrowser-3.6.0v3-win64.exe "

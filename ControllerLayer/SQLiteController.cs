@@ -9,10 +9,10 @@ using System.Data;
 using System.Data.SQLite;
 
 /// <summary>
-/// Require C:\Program Files (x86)\System.Data.SQLite\2013\bin\System.Data.SQLite.dll
-/// Version: SQLite for .NET Framework 4.5.1
+/// Require: System.Data.SQLite.dll
+/// Version: SQLite for .NET Framework 4
 /// Download from http://system.data.sqlite.org/
-/// or copy: Project_Dir\..\ControllerLayer\System.Data.SQLite.dll
+/// or copy: ..\ControllerLayer\System.Data.SQLite.dll
 /// </summary>
 namespace ControllerLayer
 {
