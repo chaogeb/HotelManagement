@@ -7,7 +7,7 @@ using Interface;
 namespace Model
 {
     //made by 廖开翔
-    public class Customer 
+    public class Customer :ICustomer
     {
         public string Name { get; set; }//顾客的姓名
         public string Gender { get; set; }//顾客的性别

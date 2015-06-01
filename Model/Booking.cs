@@ -7,7 +7,7 @@ using Interface;
 namespace Model
 {
     //made by 廖开翔
-    public class Booking
+    public class Booking:IBooking
     {
         public int ID { get; private set; }
         public DateTime StartDate { get; set; }

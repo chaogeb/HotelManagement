@@ -22,5 +22,9 @@ namespace Model
             RType = type;
             RStatus = status;
         }
+        public Room(int id)
+        {
+            ID = id;
+        }
     }
 }
