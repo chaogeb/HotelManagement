@@ -29,6 +29,7 @@ namespace HotelManagementSystem
             {
                 InitializeComponent();
                 CenterWindowOnScreen();
+                MainTab.SelectedIndex = 1;
             }
             catch (Exception)
             {
@@ -117,37 +118,52 @@ namespace HotelManagementSystem
 
         private void CheckBoxRegister_Checked(object sender, RoutedEventArgs e)
         {
-            CustomerDetailsSearchBtn.IsEnabled = false;
-            ClearCustomerDetails();
+            ContractsDetailsSearchBtn.IsEnabled = false;
+            ClearContractsDetails();
             EnableDisabletextBoxes(true);
             registerEnabled = true;
         }
 
-        private void ClearCustomerDetails()
+        private void ClearContractsDetails()
         {
-            CustomerDetailsEmailTbx.Text = "";
-            CustomerDetailsNameTbx.Text = "";
-            CustomerDetailsCreditCardNoTbx.Text = "";
-            CustomerDetailsPhoneCountryCodeTbx.Text = "";
-            CustomerDetailsPhoneNoTbx.Text = "";
+            ContractsDetailsNameTbx.Text = "";
+            ContractsDetailsCreditCardNoTbx.Text = "";
+            ContractsDetailsPhoneCountryCodeTbx.Text = "";
+            ContractsDetailsPhoneNoTbx.Text = "";
         }
 
         private void CheckBoxRegister_Unchecked(object sender, RoutedEventArgs e)
         {
-            CustomerDetailsSearchBtn.IsEnabled = true;
+            ContractsDetailsSearchBtn.IsEnabled = true;
             EnableDisabletextBoxes(false);
             registerEnabled = false;
         }
 
         private void EnableDisabletextBoxes(bool enabled)
         {
-            CustomerDetailsNameTbx.IsEnabled = enabled;
-            CustomerDetailsCreditCardNoTbx.IsEnabled = enabled;
-            CustomerDetailsPhoneCountryCodeTbx.IsEnabled = enabled;
-            CustomerDetailsPhoneNoTbx.IsEnabled = enabled;
+            ContractsDetailsNameTbx.IsEnabled = enabled;
+            ContractsDetailsCreditCardNoTbx.IsEnabled = enabled;
+            ContractsDetailsPhoneCountryCodeTbx.IsEnabled = enabled;
+            ContractsDetailsPhoneNoTbx.IsEnabled = enabled;
         }
         #endregion
 
+        #region Reciept Tab
+        private void RecieptConfirmBtn_Click(object sender, RoutedEventArgs e)
+        { }
+        #endregion
+
+        #endregion
+
+        #region CheckIn/CheckOut Tab
+        private void SearchByNameBtn_Click(object sender, RoutedEventArgs e)
+        { }
+        private void SearchByResNoBtn_Click(object sender, RoutedEventArgs e)
+        { }
+        private void CheckInBtn_Click(object sender, RoutedEventArgs e)
+        { }
+        private void CheckOutBtn_Click(object sender, RoutedEventArgs e)
+        { }
         #endregion
     }
 }

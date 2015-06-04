@@ -7,32 +7,38 @@ using Interface;
 namespace Model
 {
     //made by 廖开翔
-    public class Customer :ICustomer
+    public class Customer : ICustomer
     {
-        public string Name { get; set; }//顾客的姓名
-        public string Gender { get; set; }//顾客的性别
-        public int Age { get;set; }//顾客的年龄
-        public string Phone { get; set; }//顾客的电话
-        public int ID { get; set; }//顾客的身份证号码
-        public string Company { get; set; }//顾客所在单位
-        public string City { get; set; }//顾客居住的城市
-        public CustomerStatus CStatus { get; set; }//顾客当前的状态
+        public string ID                { get; set; }   //唯一识别码
+        public string Name              { get; set; }   //顾客的姓名
+        public CustomerGender Gender    { get; set; }   //顾客的性别
+        public int Age                  { get;set; }    //顾客的年龄
+        public string Phone             { get; set; }   //顾客的电话
+        public string Fax               { get; set; }
+        public string IDcard            { get; set; }   //顾客的身份证号码
+        public string RoomID            { get; set; }   //房间ID
+        public string Company           { get; set; }   //顾客所在单位
+        public string Address           { get; set; }   //地址
+        public string City              { get; set; }   //顾客居住的城市
 
         private List<IBooking> bookings;//订单
-        public Customer(string name, string gender,int age, string phone,
-            int id, string company, string city, CustomerStatus status)
+        public Customer(string id, string name, CustomerGender gender, int age, string phone,
+            string fax, string idcard, string roomid, string company, string address, string city)
         {
+            ID = id;
             Name = name;
             Gender = gender;
             Age = age;
             Phone = phone;
-            ID = id;
+            Fax = fax;
+            IDcard = idcard;
+            RoomID = roomid;
             Company = company;
+            Address = address;
             City = city;
-            CStatus = status;
             bookings = new List<IBooking>();
         }
-        public Customer(int id)
+        public Customer(string id)
         {
             ID = id;
             bookings = new List<IBooking>();

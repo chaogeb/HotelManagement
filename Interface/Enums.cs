@@ -6,43 +6,32 @@ using System.Text;
 // Made by chaogeb
 namespace Interface
 {
-    //酒店星级
-    public enum QualityStars
+    public enum CustomerGender
     {
-        OneStar,
-        TwoStars,
-        ThreeStars,
-        FourStars,
-        FiveStars,
-    }
-    //顾客状态
-    public enum CustomerStatus
-    {
-        CheckedIn,
-        CheckedOut,
-        Waiting
-    }
-    //订单类型
-    public enum BookingType
-    {
-        AllIncluded,
-        Breakfast,
-        TwoMeals
+        Male,
+        Female
     }
     //订单状态
     public enum BookStatus
     {
-        Canceled,
-        Completed,
-        Confirmed,
-        Paid
+        Confirmed,  // 确认
+        Timeout,    // 超时
+        Canceled    // 取消
+    }
+    // 结算状态
+    public enum ReservationStatus
+    {
+        Booked,     // 确认
+        Default,    // 违约
+        Canceled,   // 取消
+        Paid        // 已付
     }
     //房间状态
     public enum RoomStatus
     {
-        Indisposed,
-        Occupied,
-        Ready
+        Idle,       // 空闲
+        Occupied,   // 入住
+        NA          // Not Available
     }
     //房间类型
     public enum RoomType
