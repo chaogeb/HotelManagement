@@ -5,7 +5,7 @@ namespace Interface
     // Made by chaogeb
     public interface IBooking
     {
-        string ID { get; private set; }     //订单识别码
+        string ID { get; set; }     //订单识别码
         DateTime StartDate { get; set; }             //起始日期
         DateTime EndDate { get; set; }            //终止日期   
         string ReserveTime { get; set; }            //到店具体时间
