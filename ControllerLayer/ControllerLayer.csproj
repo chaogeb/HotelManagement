@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FacadeController.cs" />
     <Compile Include="CustomerController.cs" />
     <Compile Include="HotelController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

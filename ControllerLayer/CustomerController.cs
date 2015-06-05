@@ -23,7 +23,6 @@ namespace ControllerLayer
 
         internal void CheckInCustomer(ICustomer cus)
         {
-            cus.CStatus = CustomerStatus.CheckedIn;
             dbCon.UpdateCustomer(cus);
 
             foreach (IBooking book in GetActiveBookings(cus.ID))
@@ -46,7 +45,7 @@ namespace ControllerLayer
             return bookings;
         }
 
-        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city,  CustomerStatus status)
+        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
         {
             return dbCon.CreateCustomer(name, gender, phone, id, company, city, status);
         }
