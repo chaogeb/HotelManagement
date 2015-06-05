@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="IBooking.cs" />
+    <Compile Include="IClock.cs" />
     <Compile Include="ICustomer.cs" />
     <Compile Include="IReservation.cs" />
     <Compile Include="IRoom.cs" />
