@@ -44,6 +44,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="IBooking.cs" />
     <Compile Include="ICustomer.cs" />
+    <Compile Include="IReservation.cs" />
     <Compile Include="IRoom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

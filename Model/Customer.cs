@@ -14,14 +14,13 @@ namespace Model
         public CustomerGender Gender    { get; set; }   //顾客的性别
         public int Age                  { get;set; }    //顾客的年龄
         public string Phone             { get; set; }   //顾客的电话
-        public string Fax               { get; set; }
+        public string Fax               { get; set; }   //传真
         public string IDcard            { get; set; }   //顾客的身份证号码
         public string RoomID            { get; set; }   //房间ID
         public string Company           { get; set; }   //顾客所在单位
         public string Address           { get; set; }   //地址
         public string City              { get; set; }   //顾客居住的城市
 
-        private List<IBooking> bookings;//订单
         public Customer(string id, string name, CustomerGender gender, int age, string phone,
             string fax, string idcard, string roomid, string company, string address, string city)
         {
