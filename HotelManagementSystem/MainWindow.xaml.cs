@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Interface;
 
 namespace HotelManagementSystem
 {
@@ -22,6 +23,7 @@ namespace HotelManagementSystem
     public partial class MainWindow : Window
     {
         private bool registerEnabled;
+        DateTime CurrentTime;
 
         public MainWindow()
         {
@@ -53,15 +55,36 @@ namespace HotelManagementSystem
         {
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(timer_Tick);
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 10); //50
             timer.Start();
         }
         private void timer_Tick(object sender, EventArgs e)
         {
-            TimeBlock.Text = DateTime.Now.ToLongTimeString();
             if (TimeProgressBar.Value++ >= 160)
+            {
                 TimeProgressBar.Value = 0;
+                IClock.Time = IClock.Time.AddMinutes(20);
+            }
+            TimeBlock.Text = IClock.Time.ToLocalTime().ToString();
         }
+
+        #region Main Hall
+        // HallTab
+        private void Button1_Click(object sender, RoutedEventArgs e)
+        {
+            Button bt = new Button()
+            {
+                Width = 80,
+                Height = 60
+            };
+            bt.Margin = new Thickness(5,5,5,5);
+            RoomsBox.Children.Add(bt);
+        }
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+            RoomsBox.Children.Clear();
+        }
+        #endregion
 
         #region New Reservation Tab
 
