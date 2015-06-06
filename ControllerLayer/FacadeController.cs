@@ -48,9 +48,9 @@ namespace ControllerLayer
             return customerCon.DeleteBooking(cus, bookingID);
         }
 
-        public IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string roomid, string reservationid)
+        public IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype,double thisprice, string roomid, string reservationid)
         {
-            return customerCon.CreateBooking(id, start, end, reservetime, contractid, roomtype, roomid,reservationid);
+            return customerCon.CreateBooking(id, start, end, reservetime, contractid, roomtype,thisprice, roomid,reservationid);
         }
 
         public List<IBooking> GetActiveBookings(string customerID)
@@ -66,9 +66,9 @@ namespace ControllerLayer
             customerCon.CheckInCustomer(customer);
         }
 
-        public ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address, string city)
+        public ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address)
         {
-            return customerCon.CreateCustomer(id ,name, gender,age, phone,fax, idcard, roomid, company,address, city);
+            return customerCon.CreateCustomer(id ,name, gender,age, phone,fax, idcard, roomid, company,address);
         }
 
         /// <summary>

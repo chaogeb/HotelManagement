@@ -45,9 +45,9 @@ namespace ControllerLayer
             return bookings;
         }
 
-        internal ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address, string city)
+        internal ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address)
         {
-            return dbCon.CreateCustomer(id,name, gender,age, phone,fax, idcard,roomid, company,address, city);
+            return dbCon.CreateCustomer(id,name, gender,age, phone,fax, idcard,roomid, company,address);
         }
 
         internal ICustomer GetCustomer(string customerID)
@@ -65,9 +65,9 @@ namespace ControllerLayer
             return dbCon.UpdateCustomer(cus);
         }
 
-        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string roomid, string reservationid)
+        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype,double thisprice, string roomid, string reservationid)
         {
-            IBooking booking = dbCon.CreateBooking(id, start, end, reservetime, contractid, roomtype, roomid,reservationid);
+            IBooking booking = dbCon.CreateBooking(id, start, end, reservetime, contractid, roomtype,thisprice, roomid,reservationid);
             return booking;
         }
 
