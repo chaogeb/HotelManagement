@@ -35,10 +35,12 @@ namespace Model
             Company = company;
             Address = address;
             City = city;
+            bookings = new List<IBooking>();
         }
-        public Customer(string id)
+        public Customer()
         {
-            ID = id;
+            ID = IClock.GetCustomerCount;
+            bookings = new List<IBooking>();
         }
 
     }

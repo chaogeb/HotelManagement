@@ -31,5 +31,10 @@ namespace Model
             ReservationID = reservationID;
             BStatus = BookStatus.Confirmed;
         }
+
+        public Booking()
+        {
+            ID = IClock.GetBookingCount;
+        }
     }
 }

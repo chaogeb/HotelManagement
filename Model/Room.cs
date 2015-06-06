@@ -22,9 +22,9 @@ namespace Model
             RType = type;
             RStatus = status;
         }
-        public Room(string id)
+        public Room()
         {
-            ID = id;
+            ID = IClock.GetRoomCount;
         }
     }
 }
