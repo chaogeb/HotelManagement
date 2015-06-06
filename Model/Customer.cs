@@ -35,12 +35,10 @@ namespace Model
             Company = company;
             Address = address;
             City = city;
-            bookings = new List<IBooking>();
         }
         public Customer(string id)
         {
             ID = id;
-            bookings = new List<IBooking>();
         }
 
     }

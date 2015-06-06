@@ -124,7 +124,7 @@ namespace ControllerLayer
                     RoomID = rdr["ROOMID"].ToString(),
                     Company = rdr["COMPANY"].ToString(),
                     Address = rdr["ADDRESS"].ToString(),
-                    City = rdr["CITY"].ToString(),
+                    City = rdr["CITY"].ToString()
                 };
             }
             catch (Exception ex)
@@ -163,7 +163,7 @@ namespace ControllerLayer
                           rdr["ROOMID"].ToString(),
                           rdr["COMPANY"].ToString(),
                           rdr["ADDRESS"].ToString(),
-                          rdr["CITY"].ToString(),
+                          rdr["CITY"].ToString()
                         ));
                 }
             }
@@ -210,18 +210,23 @@ namespace ControllerLayer
             return GetCustomer(customer.ID);
         }
 
-        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
+        internal ICustomer CreateCustomer(string id,string name, CustomerGender gender,int age, string phone,string fax,string idcard,string roomid, string company,string address, string city)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("CreateCustomer", sqlCon);
 
             cmd.Parameters["@ID"].Direction = ParameterDirection.Output;
 
+            cmd.Parameters.AddWithValue("@ID", id);
             cmd.Parameters.AddWithValue("@NAME", name);
             cmd.Parameters.AddWithValue("@GENDER", gender);
+            cmd.Parameters.AddWithValue("@AGE", age);
             cmd.Parameters.AddWithValue("@PHONE", phone);
-            cmd.Parameters.AddWithValue("@ID", id);
+            cmd.Parameters.AddWithValue("@FAX", fax);
+            cmd.Parameters.AddWithValue("@IDCARD", idcard);
+            cmd.Parameters.AddWithValue("@ROOMID", roomid);
             cmd.Parameters.AddWithValue("@COMPANY", company);
+            cmd.Parameters.AddWithValue("@ADDRESS", address);
             cmd.Parameters.AddWithValue("@CITY", city);
 
             try
@@ -240,7 +245,7 @@ namespace ControllerLayer
             return GetCustomer(id);
         }
 
-        internal bool DeleteCustomer(int customerID)
+        internal bool DeleteCustomer(string customerID)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("DeleteCustomer", sqlCon);
@@ -385,7 +390,7 @@ namespace ControllerLayer
 
         #region Booking Procedures
 
-        internal bool DeleteBooking(int bookingID)
+        internal bool DeleteBooking(string bookingID)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("DeleteBooking", sqlCon);
@@ -407,7 +412,7 @@ namespace ControllerLayer
             return true;
         }
 
-        internal IBooking GetBooking(int bookingID)
+        internal IBooking GetBooking(string bookingID)
         {
             connect();
             Booking book;
@@ -421,13 +426,14 @@ namespace ControllerLayer
                 rdr.Read();
                 book = new Booking
                     (
-                        int.Parse(rdr["ID"].ToString()),
+                        rdr["ID"].ToString(),
                         DateTime.Parse(rdr["STARTDATE"].ToString()),
                         DateTime.Parse(rdr["ENDDATE"].ToString()),
-                        double.Parse(rdr["PRICE"].ToString()),
-                        rdr["COMMENT"].ToString(),
-                        (BookingType)Enum.Parse(typeof(BookingType), rdr["BTYPE"].ToString()),
-                        int.Parse(rdr["ROOMID"].ToString())
+                        rdr["RESERVETIME"].ToString(),
+                        rdr["CONTRACTID"].ToString(),
+                        (RoomType)Enum.Parse(typeof(RoomType), (rdr["RTYPE"].ToString())),
+                        rdr["ROOMID"].ToString(),
+                        rdr["RESERVATIONID"].ToString()
                     );
             }
             catch (Exception ex)
@@ -441,7 +447,7 @@ namespace ControllerLayer
             return book;
         }
 
-        internal IBooking CreateBooking(ICustomer customer, DateTime start, DateTime end, double price, string comment, BookingType type, long roomId)
+        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid,  RoomType roomtype,string roomid,string reservationid)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("CreateBooking", sqlCon);
@@ -449,20 +455,20 @@ namespace ControllerLayer
 
             cmd.Parameters["@ID"].Direction = ParameterDirection.Output;
 
-            cmd.Parameters.AddWithValue("@CUSTOMERID", customer.ID);
+            cmd.Parameters.AddWithValue("@ID", id);
             cmd.Parameters.AddWithValue("@STARTDATE", start);
             cmd.Parameters.AddWithValue("@ENDDATE", end);
-            cmd.Parameters.AddWithValue("@PRICE", price);
-            cmd.Parameters.AddWithValue("@COMMENT", comment);
-            cmd.Parameters.AddWithValue("@BTYPE", type.ToString());
+            cmd.Parameters.AddWithValue("@RESERVETIME", reservetime);
+            cmd.Parameters.AddWithValue("@CONTRACTID", contractid);
+            cmd.Parameters.AddWithValue("@ROOMTYPE", roomtype);
+            cmd.Parameters.AddWithValue("@ROOMID", roomid);
+            cmd.Parameters.AddWithValue("@RESERVATIONID", reservationid);
             cmd.Parameters.AddWithValue("@BSTATUS", "Confirmed");
-            cmd.Parameters.AddWithValue("@ROOMID", roomId);
 
-            int id;
             try
             {
                 cmd.ExecuteNonQuery();
-                id = int.Parse(cmd.Parameters["@ID"].Value.ToString());
+                id = cmd.Parameters["@ID"].Value.ToString();
             }
             catch (Exception ex)
             {
@@ -475,7 +481,7 @@ namespace ControllerLayer
             return GetBooking(id);
         }
 
-        internal List<IBooking> GetBookings(int customerID)
+        internal List<IBooking> GetBookings(string customerID)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("GetBookings", sqlCon);
@@ -491,13 +497,14 @@ namespace ControllerLayer
                 {
                     bookings.Add(new Booking
                     (
-                        int.Parse(rdr["ID"].ToString()),
+                        rdr["ID"].ToString(),
                         DateTime.Parse(rdr["STARTDATE"].ToString()),
                         DateTime.Parse(rdr["ENDDATE"].ToString()),
-                        double.Parse(rdr["PRICE"].ToString()),
-                        rdr["COMMENT"].ToString(),
-                        (BookingType)Enum.Parse(typeof(BookingType), rdr["BTYPE"].ToString()),
-                        int.Parse(rdr["ROOMID"].ToString())
+                        rdr["RESERVETIME"].ToString(),
+                        rdr["CONTRACTID"].ToString(),
+                        (RoomType)Enum.Parse(typeof(RoomType), (rdr["ROOMTYPE"].ToString())),
+                        rdr["ROOMID"].ToString(),
+                        rdr["RESERVATIONID"].ToString()
                     ));
                 }
                 return bookings;
@@ -527,13 +534,15 @@ namespace ControllerLayer
                 {
                     bookings.Add(new Booking
                     (
-                        int.Parse(rdr["ID"].ToString()),
+                        rdr["ID"].ToString(),
                         DateTime.Parse(rdr["STARTDATE"].ToString()),
                         DateTime.Parse(rdr["ENDDATE"].ToString()),
-                        double.Parse(rdr["PRICE"].ToString()),
-                        rdr["COMMENT"].ToString(),
-                        (BookingType)Enum.Parse(typeof(BookingType), rdr["BTYPE"].ToString()),
-                        int.Parse(rdr["ROOMID"].ToString())
+                        rdr["RESERVETIME"].ToString(),
+                        rdr["CONTRACTID"].ToString(),
+                        (RoomType)Enum.Parse(typeof(RoomType), (rdr["ROOMTYPE"].ToString())),
+                        rdr["ROOMID"].ToString(),
+                        rdr["RESERVATIONID"].ToString(),
+                        (BookStatus)Enum.Parse(typeof(BookStatus), (rdr["BSTATUS"].ToString()))
                     ));
                 }
             }

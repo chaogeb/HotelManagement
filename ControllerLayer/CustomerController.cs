@@ -16,7 +16,7 @@ namespace ControllerLayer
             dbCon = db;
         }
 
-        internal bool DeleteBooking(ICustomer cus, int bookingID)
+        internal bool DeleteBooking(ICustomer cus, string bookingID)
         {
             return dbCon.DeleteBooking(bookingID);
         }
@@ -33,29 +33,29 @@ namespace ControllerLayer
             }
         }
 
-        internal List<IBooking> GetActiveBookings(int customerID)
+        internal List<IBooking> GetActiveBookings(string customerID)
         {
             List<IBooking> bookings = new List<IBooking>();
 
             foreach (IBooking book in dbCon.GetBookings(customerID))
             {
-                if (book.BStatus == BookStatus.Confirmed || book.BStatus == BookStatus.Paid)
+                if (book.BStatus == BookStatus.Confirmed )
                     bookings.Add(book);
             }
             return bookings;
         }
 
-        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
+        internal ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address, string city)
         {
-            return dbCon.CreateCustomer(name, gender, phone, id, company, city, status);
+            return dbCon.CreateCustomer(id,name, gender,age, phone,fax, idcard,roomid, company,address, city);
         }
 
-        internal ICustomer GetCustomer(int customerID)
+        internal ICustomer GetCustomer(string customerID)
         {
             return dbCon.GetCustomer(customerID);
         }
 
-        internal bool DeleteCustomer(int customerID)
+        internal bool DeleteCustomer(string customerID)
         {
             return dbCon.DeleteCustomer(customerID);
         }
@@ -65,9 +65,9 @@ namespace ControllerLayer
             return dbCon.UpdateCustomer(cus);
         }
 
-        internal IBooking CreateBooking(ICustomer customer, DateTime start, DateTime end, double price, string comment, BookingType type, long roomId)
+        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string roomid, string reservationid)
         {
-            IBooking booking = dbCon.CreateBooking(customer, start, end, price, comment, type, roomId);
+            IBooking booking = dbCon.CreateBooking(id, start, end, reservetime, contractid, roomtype, roomid,reservationid);
             return booking;
         }
 
