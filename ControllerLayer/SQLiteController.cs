@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Threading.Tasks;
 using System.Data.SQLite;
 
 /// <summary>
@@ -54,16 +55,54 @@ namespace ControllerLayer
             }
         }
 
-        internal void DatabaseController()
+        internal void SQLiteController()
         {
             string dbPath = "Data Source =" + Environment.CurrentDirectory + "/HotelDataBase.db";
             sqlCon = new SQLiteConnection(dbPath);
+            sqlCon.Open();//打开数据库，若文件不存在会自动创建   
+            string sql1 = "CREATE TABLE IF NOT EXISTS Room(ID varchar, ROOMNUM varchar, PRICE varchar,RTYPE varchar,RSTATUS varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable1 = new SQLiteCommand(sql1, sqlCon);
+            cmdCreateTable1.ExecuteNonQuery();//如果表不存在，创建数据表  
+ 
+            string sql2 = "CREATE TABLE IF NOT EXISTS Customer(ID varchar, NAME varchar, GENDER varchar,AGE varchar,PHONE varchar,FAX varchar,IDCARD varchar,ROOMTD varchar,COMPANY varchar,ADDRESS avrchar,CITY varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable2 = new SQLiteCommand(sql2, sqlCon);
+            cmdCreateTable2.ExecuteNonQuery();//如果表不存在，创建数据表  
+
+            string sql3 = "CREATE TABLE IF NOT EXISTS Booking(ID varchar, STARTDATE varchar, ENDDATE varchar,RESERVETIME varchar,CONTRACTID varchar,ROOMTYPE varchar,ROOMID varchar,RESERVATION varchar,BSTATUS varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable3 = new SQLiteCommand(sql3, sqlCon);
+            cmdCreateTable3.ExecuteNonQuery();//如果表不存在，创建数据表  
+
+            string sql4 = "CREATE TABLE IF NOT EXISTS Reservation(ID varchar, PAYMENT varchar, DOWNPAYMENT varchar,RSTATUS varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable4 = new SQLiteCommand(sql4, sqlCon);
+            cmdCreateTable4.ExecuteNonQuery();//如果表不存在，创建数据表  
+
+            string sql5 = "CREATE TABLE IF NOT EXISTS Clock(TIME varchar, COUNTROOM varchar, COUNTCUSTOMER varchar,COUNTBOOKING varchar,COUNTRESERVE varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable5 = new SQLiteCommand(sql5, sqlCon);
+            cmdCreateTable5.ExecuteNonQuery();//如果表不存在，创建数据表  
+            sqlCon.Close();
+        }
+
+        internal bool Authenticated()
+        {
+            try
+            {
+                sqlCon.Open();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                sqlCon.Close();
+            }
         }
         #endregion
 
         #region Customer Procedures
 
-        internal ICustomer GetCustomer(int id)
+        internal ICustomer GetCustomer(string id)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("GetCustomer", sqlCon);
@@ -74,14 +113,18 @@ namespace ControllerLayer
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
                 rdr.Read();
-                return new Customer(int.Parse(rdr["ID"].ToString()))
+                return new Customer(rdr["ID"].ToString())
                 {
                     Name = rdr["NAME"].ToString(),
+                    Gender = (CustomerGender)Enum.Parse(typeof(CustomerGender), rdr["GENDER"].ToString()),
                     Age = int.Parse(rdr["AGE"].ToString()),
                     Phone = rdr["PHONE"].ToString(),
+                    Fax = rdr["FAX"].ToString(),
+                    IDcard = rdr["IDCARD"].ToString(),
+                    RoomID = rdr["ROOMID"].ToString(),
                     Company = rdr["COMPANY"].ToString(),
+                    Address = rdr["ADDRESS"].ToString(),
                     City = rdr["CITY"].ToString(),
-                    CStatus = (CustomerStatus)Enum.Parse(typeof(CustomerStatus), rdr["CSTATUS"].ToString())
                 };
             }
             catch (Exception ex)
@@ -108,15 +151,19 @@ namespace ControllerLayer
                 while (rdr.Read())
                 {
                     customers.Add(new Customer
+                        
                         (
-                        rdr["NAME"].ToString(),
-                        rdr["GENDER"].ToString(),
-                        int.Parse(rdr["AGE"].ToString()),
-                        rdr["PHONE"].ToString(),
-                        int.Parse(rdr["ID"].ToString()),
-                        rdr["COMPANY"].ToString(),
-                        rdr["CITY"].ToString(),
-                        (CustomerStatus)Enum.Parse(typeof(CustomerStatus), rdr["CSTATUS"].ToString())
+                          rdr["ID"].ToString(),
+                          rdr["NAME"].ToString(),
+                          (CustomerGender)Enum.Parse(typeof(CustomerGender), rdr["GENDER"].ToString()),
+                          int.Parse(rdr["AGE"].ToString()),
+                          rdr["PHONE"].ToString(),
+                          rdr["FAX"].ToString(),
+                          rdr["IDCARD"].ToString(),
+                          rdr["ROOMID"].ToString(),
+                          rdr["COMPANY"].ToString(),
+                          rdr["ADDRESS"].ToString(),
+                          rdr["CITY"].ToString(),
                         ));
                 }
             }
@@ -141,9 +188,12 @@ namespace ControllerLayer
             cmd.Parameters.AddWithValue("@GENDER", customer.Gender);
             cmd.Parameters.AddWithValue("@AGE", customer.Age);
             cmd.Parameters.AddWithValue("@PHONE", customer.Phone);
+            cmd.Parameters.AddWithValue("@FAX", customer.Fax);
+            cmd.Parameters.AddWithValue("@IDCARD", customer.IDcard);
+            cmd.Parameters.AddWithValue("@ROOMID", customer.RoomID);
             cmd.Parameters.AddWithValue("@COMPANY", customer.Company);
+            cmd.Parameters.AddWithValue("@ADDRESS", customer.Address);
             cmd.Parameters.AddWithValue("@CITY", customer.City);
-            cmd.Parameters.AddWithValue("@CSTATUS", customer.CStatus.ToString());
 
             try
             {
@@ -160,7 +210,7 @@ namespace ControllerLayer
             return GetCustomer(customer.ID);
         }
 
-        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city, CustomerStatus status)
+        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("CreateCustomer", sqlCon);
@@ -173,12 +223,11 @@ namespace ControllerLayer
             cmd.Parameters.AddWithValue("@ID", id);
             cmd.Parameters.AddWithValue("@COMPANY", company);
             cmd.Parameters.AddWithValue("@CITY", city);
-            cmd.Parameters.AddWithValue("@CSTATUS", status.ToString());
 
             try
             {
                 cmd.ExecuteNonQuery();
-                id = int.Parse(cmd.Parameters["@ID"].Value.ToString());
+                id = cmd.Parameters["@ID"].Value.ToString();
             }
             catch (Exception ex)
             {
@@ -226,7 +275,7 @@ namespace ControllerLayer
 
             RoomType rType;
             RoomStatus rStatus;
-            int id, roomNum;
+            string id , roomNum;
             double price;
 
             try
@@ -235,11 +284,9 @@ namespace ControllerLayer
                 {
                     rStatus = (RoomStatus)Enum.Parse(typeof(RoomStatus), r["RSTATUS"].ToString());
                     rType = (RoomType)Enum.Parse(typeof(RoomType), r["RTYPE"].ToString());
-
-                    id = int.Parse(r["ID"].ToString());
-                    roomNum = int.Parse(r["ROOMNUM"].ToString());
+                    id = r["ID"].ToString();
+                    roomNum = r["ROOMNUM"].ToString();
                     price = double.Parse(r["PRICE"].ToString());
-
                     temp.Add(new Room(id, roomNum, price, rType, rStatus));
 
                 }
@@ -255,7 +302,7 @@ namespace ControllerLayer
             }
         }
 
-        internal IRoom GetRoom(int id)
+        internal IRoom GetRoom(string id)
         {
             connect();
 
@@ -268,9 +315,9 @@ namespace ControllerLayer
                 SQLiteDataReader rdr = cmd.ExecuteReader();
                 rdr.Read();
 
-                return new Room(int.Parse(rdr["ID"].ToString()))
+                return new Room(rdr["ID"].ToString())
                 {
-                    RoomNum = int.Parse((rdr["ROOMNUM"].ToString())),
+                    RoomNum = rdr["ROOMNUM"].ToString(),
                     Price = double.Parse((rdr["PRICE"].ToString())),
                     RType = (RoomType)Enum.Parse(typeof(RoomType), (rdr["RTYPE"].ToString())),
                     RStatus = (RoomStatus)Enum.Parse(typeof(RoomStatus), (rdr["RSTATUS"].ToString()))
@@ -286,7 +333,7 @@ namespace ControllerLayer
             }
         }
 
-        internal IRoom CreateRoom(int id, int roomNum, double price, RoomType rType, RoomStatus rStatus)
+        internal IRoom CreateRoom(string id, string roomNum, double price, RoomType rType, RoomStatus rStatus)
         {
             connect();
 
@@ -302,16 +349,8 @@ namespace ControllerLayer
             cmd.Parameters.AddWithValue("@RSTATUS", rStatus.ToString());
 
             cmd.ExecuteNonQuery();
-            if (int.TryParse(cmd.Parameters["@ID"].Value.ToString(), out id))
-            {
-                disconnect();
-                return GetRoom(id);
-            }
-            else
-            {
-                disconnect();
-                throw new Exception("Returning IRoom Failed!");
-            }
+            return GetRoom(id);
+           
         }
 
         internal IRoom UpdateRoom(IRoom room)

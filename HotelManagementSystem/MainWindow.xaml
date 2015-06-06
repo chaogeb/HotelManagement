@@ -7,12 +7,22 @@
         mc:Ignorable="d"
         Title="Hotel Management System" SizeToContent="WidthAndHeight" MinWidth="800" MinHeight="450">
     <Grid Background="#FFE5E5E5">
-        <TextBlock Name="TimeBlock" Loaded="ShowTimeBlock" Margin="700,10,0,0">00:00:00</TextBlock>
+        <TextBlock Name="TimeBlock" Loaded="ShowTimeBlock" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,80,0">00:00:00</TextBlock>
         <ProgressBar Name="TimeProgressBar" Maximum="160" Height="5" VerticalAlignment="Top" IsIndeterminate="False"></ProgressBar>
         <TabControl x:Name="MainTab" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="400" MinWidth="750" Margin="0,3,0,0">
 
             <TabItem x:Name="HallTab" Header="大厅" VerticalAlignment="Bottom" Width="130" Height="29">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="#FFE5E5E5">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="20,12">
+                            <Button x:Name="Button1Btn" Height="23" HorizontalAlignment="Left" Width="75" Click="Button1_Click">Add</Button>
+                            <Button x:Name="Button2Btn" Height="23" HorizontalAlignment="Left" Margin="20,0" Width="75" Click="Button2_Click">Clear</Button>
+                        </StackPanel>
+                        <Grid Margin="20,0">
+                            <WrapPanel x:Name="RoomsBox"></WrapPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
             </TabItem>
 
             <TabItem x:Name="NewReservationTab" Header="预订" Width="130">
@@ -120,8 +130,12 @@
                                             <Label x:Name="checkOutDateLbl" Content="离店日期：" Margin="10,8,5,0" Width="70"/>
                                             <TextBox x:Name="RecieptCheckOutDateTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
                                         </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,30,0,0">
+                                            <Label x:Name="latestArrivalTimeLbl" Content="最晚到店时间：" Margin="0,0,5,0" Width="95"/>
+                                            <ComboBox x:Name="ArrivalTimeHourCombo" Width="100"/>
+                                        </StackPanel>
                                         <StackPanel Orientation="Horizontal">
-                                            <Label x:Name="downPaymentLbl" Content="已收订金：" Margin="10,8,5,0" Width="70"/>
+                                            <Label x:Name="downPaymentLbl" Content="已收订金：" Margin="25,8,5,0" Width="70"/>
                                             <TextBox x:Name="RecieptDownPaymentTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="100"/>
                                         </StackPanel>
                                     </StackPanel>

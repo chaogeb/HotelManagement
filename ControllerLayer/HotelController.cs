@@ -12,70 +12,39 @@ namespace ControllerLayer
     {
         private SQLiteController dbCon;
 
-        /// <summary>
-        /// Initializes a HotelController.r
-        /// </summary>
-        /// <param name="db"></param>
-
+        //Initializes a HotelController.r
         internal HotelController(SQLiteController db)
-        {
+        {//初始化
             dbCon = db;
         }
 
-        /// <summary>
-        ///  Adds a room to the database.
-        /// </summary>
-        /// <param name="hotelID"></param>
-        /// <param name="roomNum"></param>
-        /// <param name="price"></param>
-        /// <param name="rType"></param>
-        /// <param name="rStatus"></param>
-        /// <returns></returns>
-
-        internal IRoom CreateRoom(int hotelID, int roomNum, double price, RoomType rType, RoomStatus rStatus)
+        // Adds a room to the database.
+        internal IRoom CreateRoom(string ID, string roomNum, double price, RoomType rType, RoomStatus rStatus)
         {
-            return dbCon.CreateRoom(hotelID, roomNum, price, rType, rStatus);
+            return dbCon.CreateRoom(ID, roomNum, price, rType, rStatus);
         }
 
-        /// <summary>
-        ///  Returns a IRoom from id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-
-        internal IRoom GetRoom(int id)
+        // Returns a IRoom from id.
+        internal IRoom GetRoom(string id)
         {
             return dbCon.GetRoom(id);
         }
 
-        /// <summary>
-        ///  Returns a list of all the rooms.
-        /// </summary>
-        /// <returns></returns>
-
+        /// Returns a list of all the rooms.
         internal List<IRoom> GetRooms()
         {
             return dbCon.GetRooms();
         }
 
-        /// <summary>
-        /// Updates a room,Room to update based on ID
-        /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
- 
+        /// Updates a room
+        /// Room to update based on ID
         internal IRoom UpdateRoom(IRoom room)
         {
             return dbCon.UpdateRoom(room);
         }
 
 
-        /// <summary>
-        ///  Checks in the customer. By changing CStatus and RStatus on the rooms booked.
-        /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
-
+        // Checks in the customer. By changing CStatus and RStatus on the rooms booked.
         internal IRoom CheckInRoom(IRoom room)
         {
             room.RStatus = RoomStatus.Occupied;
@@ -83,15 +52,7 @@ namespace ControllerLayer
         }
 
 
-        /// <summary>
-        /// Return a list of available rooms
-        /// </summary>
-        /// <param name="roomtype"></param>
-        /// <param name="startdate"></param>
-        /// <param name="enddate"></param>
-        /// <param name="hotelID"></param>
-        /// <returns></returns>
-
+        //Return a list of available rooms
         internal List<IRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate, int hotelID = -1)
         {
             List<IBooking> bookings = dbCon.GetBookings();

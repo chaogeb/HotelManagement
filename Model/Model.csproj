@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Booking.cs" />
-    <Compile Include="Clock.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="Initialize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
