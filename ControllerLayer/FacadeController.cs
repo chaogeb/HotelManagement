@@ -43,17 +43,17 @@ namespace ControllerLayer
 
         #region Booking Methods
 
-        public bool DeleteBooking(ICustomer cus, int bookingID)
+        public bool DeleteBooking(ICustomer cus, string bookingID)
         {
             return customerCon.DeleteBooking(cus, bookingID);
         }
 
-        public IBooking CreateBooking(ICustomer customer, DateTime start, DateTime end, double price, string comment, BookingType type, long roomId)
+        public IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string roomid, string reservationid)
         {
-            return customerCon.CreateBooking(customer, start, end, price, comment, type, roomId);
+            return customerCon.CreateBooking(id, start, end, reservetime, contractid, roomtype, roomid,reservationid);
         }
 
-        public List<IBooking> GetActiveBookings(int customerID)
+        public List<IBooking> GetActiveBookings(string customerID)
         {
             return customerCon.GetActiveBookings(customerID);
         }
@@ -66,10 +66,9 @@ namespace ControllerLayer
             customerCon.CheckInCustomer(customer);
         }
 
-        public ICustomer CreateCustomer(string name, string gender, string phone, int id,
-                        string company, string city, CustomerStatus status)
+        public ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address, string city)
         {
-            return customerCon.CreateCustomer(name, gender, phone, id, company, city, status);
+            return customerCon.CreateCustomer(id ,name, gender,age, phone,fax, idcard, roomid, company,address, city);
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace ControllerLayer
         /// </summary>
         /// <param name="customerID"></param>
         /// <returns></returns>
-        public ICustomer GetCustomer(int customerID)
+        public ICustomer GetCustomer(string customerID)
         {
             return customerCon.GetCustomer(customerID);
         }
@@ -87,7 +86,7 @@ namespace ControllerLayer
             return customerCon.GetCustomers();
         }
 
-        public bool DeleteCustomer(int customerID)
+        public bool DeleteCustomer(string customerID)
         {
             return customerCon.DeleteCustomer(customerID);
         }
@@ -101,12 +100,12 @@ namespace ControllerLayer
 
         #region Room Methods
 
-        public IRoom CreateRoom(int hotelID, int roomNum, double price, RoomType rType, RoomStatus rStatus)
+        public IRoom CreateRoom(string id, string roomNum, double price, RoomType rType, RoomStatus rStatus)
         {
-            return hotelCon.CreateRoom(hotelID, roomNum, price, rType, rStatus);
+            return hotelCon.CreateRoom(id, roomNum, price, rType, rStatus);
         }
 
-        public IRoom GetRoom(int roomID)
+        public IRoom GetRoom(string roomID)
         {
             return hotelCon.GetRoom(roomID);
         }

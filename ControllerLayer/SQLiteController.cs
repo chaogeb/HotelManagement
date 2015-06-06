@@ -113,7 +113,7 @@ namespace ControllerLayer
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
                 rdr.Read();
-                return new Customer(rdr["ID"].ToString())
+                return new Customer()
                 {
                     Name = rdr["NAME"].ToString(),
                     Gender = (CustomerGender)Enum.Parse(typeof(CustomerGender), rdr["GENDER"].ToString()),
@@ -320,7 +320,7 @@ namespace ControllerLayer
                 SQLiteDataReader rdr = cmd.ExecuteReader();
                 rdr.Read();
 
-                return new Room(rdr["ID"].ToString())
+                return new Room()
                 {
                     RoomNum = rdr["ROOMNUM"].ToString(),
                     Price = double.Parse((rdr["PRICE"].ToString())),
