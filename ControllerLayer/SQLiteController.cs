@@ -226,7 +226,7 @@ namespace ControllerLayer
 
             RoomType rType;
             RoomStatus rStatus;
-            int id, hotelID, roomNum;
+            int id, roomNum;
             double price;
 
             try
