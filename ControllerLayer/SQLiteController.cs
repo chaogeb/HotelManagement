@@ -541,8 +541,7 @@ namespace ControllerLayer
                         rdr["CONTRACTID"].ToString(),
                         (RoomType)Enum.Parse(typeof(RoomType), (rdr["ROOMTYPE"].ToString())),
                         rdr["ROOMID"].ToString(),
-                        rdr["RESERVATIONID"].ToString(),
-                        (BookStatus)Enum.Parse(typeof(BookStatus), (rdr["BSTATUS"].ToString()))
+                        rdr["RESERVATIONID"].ToString()
                     ));
                 }
             }
