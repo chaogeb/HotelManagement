@@ -19,10 +19,9 @@ namespace Model
         public string RoomID            { get; set; }   //房间ID
         public string Company           { get; set; }   //顾客所在单位
         public string Address           { get; set; }   //地址
-        public string City              { get; set; }   //顾客居住的城市
 
         public Customer(string id, string name, CustomerGender gender, int age, string phone,
-            string fax, string idcard, string roomid, string company, string address, string city)
+            string fax, string idcard, string roomid, string company, string address)
         {
             ID = id;
             Name = name;
@@ -34,7 +33,6 @@ namespace Model
             RoomID = roomid;
             Company = company;
             Address = address;
-            City = city;
         }
         public Customer()
         {

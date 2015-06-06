@@ -15,7 +15,7 @@ namespace Model
         public string ReserveTime          { get; set; }            //到店具体时间
         public string ContractID           { get; set; }            //联系人ID
         public RoomType Roomtype           { get; set; }            //房间类型
-        public double RoomPrice            { get; set; }            //订单当前房间价格
+        public double ThisPrice            { get; set; }            //订单当前房间价格
         public string RoomID               { get; set; }            //房间ID
         public string ReservationID        { get; set; }            //结账单号
         public BookStatus BStatus          { get; set; }            //订单状态
@@ -28,7 +28,7 @@ namespace Model
             ReserveTime = reserveTime;
             ContractID = contractID;
             Roomtype = roomType;
-            RoomPrice = price;
+            ThisPrice = price;
             RoomID = roomId;
             ReservationID = reservationID;
             BStatus = BookStatus.Confirmed;
