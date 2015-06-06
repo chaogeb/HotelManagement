@@ -19,5 +19,9 @@ namespace Model
             DownPayment = downpayment;
             RStatus = rstatus;
         }
+        public Reservation()
+        {
+            ID = IClock.GetReservCount;
+        }
     }
 }
