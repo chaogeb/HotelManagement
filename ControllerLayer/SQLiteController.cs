@@ -644,5 +644,149 @@ namespace ControllerLayer
         }
 
         #endregion
+
+        #region RoomPrice Procedures
+
+        
+        internal bool DeleteRoomPrice(RoomType RType)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("DeleteRoomPrice", sqlCon);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RTYPE", RType);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to delete Roomprice from databse!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return true;
+        }
+
+        internal IRoomPrice GetRprice(RoomType RType)
+        {
+            connect();
+            RoomPrice roomprice;
+            SQLiteCommand cmd = new SQLiteCommand("GetRprice", sqlCon);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RTYPE", RType);
+
+            try
+            {
+                SQLiteDataReader rdr = cmd.ExecuteReader();
+                rdr.Read();
+                roomprice = new RoomPrice
+                    (
+                        (RoomType)Enum.Parse(typeof(RoomType), rdr["RTYPE"].ToString()),
+                        double.Parse(rdr["RPRICE"].ToString())
+                    );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to parse/create new roomprice!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return roomprice;
+        }
+
+        internal List<IRoomPrice> CreateRoomPrice(RoomType rType, double price)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("CreateRoomPrice", sqlCon);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@RTYPE", rType);
+            cmd.Parameters.AddWithValue("@RPRICE", price);
+
+            RoomType roomtype;
+            try
+            {
+                cmd.ExecuteNonQuery();
+                roomtype = (RoomType)Enum.Parse(typeof(RoomType), cmd.Parameters["RTYPE"].ToString());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not add roomprice to database!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return GetRoomPrice(roomtype);
+        }
+
+        internal List<IRoomPrice> GetRoomPrice(RoomType roomtype)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("GetRoomPrice", sqlCon);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@RTYPE", roomtype);
+
+            List<IRoomPrice> roomprice = new List<IRoomPrice>();
+            try
+            {
+                SQLiteDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    roomprice.Add(new RoomPrice
+                    (
+                        (RoomType)Enum.Parse(typeof(RoomType), rdr["BTYPE"].ToString()),
+                        double.Parse(rdr["RPRICE"].ToString())
+                    ));
+                }
+                return roomprice;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not parse roomprice!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+        }
+
+        internal List<IRoomPrice> GetRoomPrice()
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("GetAllRoomPrice", sqlCon);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            List<IRoomPrice> roomprice = new List<IRoomPrice>();
+            try
+            {
+                SQLiteDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    roomprice.Add(new RoomPrice
+                    (
+                        (RoomType)Enum.Parse(typeof(RoomType), rdr["BTYPE"].ToString()),
+                        double.Parse(rdr["RPRICE"].ToString())
+                    ));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not parse roomprice!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return roomprice;
+        }
+        #endregion
     }
 }
