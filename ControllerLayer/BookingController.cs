@@ -112,7 +112,7 @@ namespace ControllerLayer
             dbCon.UpdateBooking(book);
             //如果reservation中只有一个booking，当booking取消时，reservation也取消
             string reservationID = book.ReservationID;
-            List<IBooking> books = dbCon.GetBooking(reservationID);
+            List<IBooking> books = dbCon.GetBookings(reservationID);
             int count=books.Count();
             if (count == 1)
                 CancelReservation(reservationID);
@@ -146,12 +146,14 @@ namespace ControllerLayer
             IReservation reservation = new Reservation();
             string reservationID=reservation.ID;
             double payment = 0;
+            double downpayment = 0;
             //将生成的reservationID赋给属于它的每一个booking
             foreach (IBooking book in books)
             {
                 book.ReservationID = reservationID;
                 IRoomPrice roomprice=dbCon.GetRprice(book.Roomtype);
                 payment += roomprice.Price;
+                downpayment = reservation.DownPayment;
                 dbCon.UpdateBooking(book);
             }
             return dbCon.CreateReservation(reservationID, payment, downpayment, ReservationStatus.Booked);//定金一个固定值
