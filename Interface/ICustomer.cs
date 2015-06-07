@@ -16,6 +16,5 @@ namespace Interface
         string RoomID           { get; set; }   //房间ID
         string Company          { get; set; }   //顾客所在单位
         string Address          { get; set; }   //地址
-        string City             { get; set; }   //顾客居住的城市
     }
 }
