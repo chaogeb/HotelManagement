@@ -19,9 +19,12 @@ namespace Model
             DownPayment = downpayment;
             RStatus = rstatus;
         }
-        public Reservation()
+        public Reservation(string payment, string downpayment)
         {
             ID = IClock.GetReservCount;
+            Payment = payment;
+            DownPayment = downpayment;
+            RStatus = ReservationStatus.Booked;
         }
     }
 }

@@ -15,12 +15,23 @@ namespace ControllerLayer
         {
             dbCon = db;
         }
-
-        internal bool DeleteBooking(ICustomer cus, int bookingID)
+        #region Customer 
+        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
         {
-            return dbCon.DeleteBooking(bookingID);
+            return dbCon.CreateCustomer(name, gender, phone, id, company, city, status);
         }
-
+        internal bool DeleteCustomer(int customerID)
+        {
+            return dbCon.DeleteCustomer(customerID);
+        }
+        internal ICustomer GetCustomer(int customerID)
+        {
+            return dbCon.GetCustomer(customerID);
+        }
+        internal List<ICustomer> GetCustomers()
+        {
+            return dbCon.GetCustomers();
+        }
         internal void CheckInCustomer(ICustomer cus)
         {
             dbCon.UpdateCustomer(cus);
@@ -32,7 +43,22 @@ namespace ControllerLayer
                 dbCon.UpdateRoom(room);
             }
         }
+        internal ICustomer UpdateCustomer(ICustomer cus)
+        {
+            return dbCon.UpdateCustomer(cus);
+        }
+        #endregion 
 
+        #region Booking
+        internal IBooking CreateBooking(ICustomer customer, DateTime start, DateTime end, double price, string comment, BookingType type, long roomId)
+        {
+            IBooking booking = dbCon.CreateBooking(customer, start, end, price, comment, type, roomId);
+            return booking;
+        }
+        internal bool DeleteBooking(ICustomer cus, int bookingID)
+        {
+            return dbCon.DeleteBooking(bookingID);
+        }
         internal List<IBooking> GetActiveBookings(int customerID)
         {
             List<IBooking> bookings = new List<IBooking>();
@@ -44,36 +70,7 @@ namespace ControllerLayer
             }
             return bookings;
         }
-
-        internal ICustomer CreateCustomer(string name, string gender, string phone, int id, string company, string city)
-        {
-            return dbCon.CreateCustomer(name, gender, phone, id, company, city, status);
-        }
-
-        internal ICustomer GetCustomer(int customerID)
-        {
-            return dbCon.GetCustomer(customerID);
-        }
-
-        internal bool DeleteCustomer(int customerID)
-        {
-            return dbCon.DeleteCustomer(customerID);
-        }
-
-        internal ICustomer UpdateCustomer(ICustomer cus)
-        {
-            return dbCon.UpdateCustomer(cus);
-        }
-
-        internal IBooking CreateBooking(ICustomer customer, DateTime start, DateTime end, double price, string comment, BookingType type, long roomId)
-        {
-            IBooking booking = dbCon.CreateBooking(customer, start, end, price, comment, type, roomId);
-            return booking;
-        }
-
-        internal List<ICustomer> GetCustomers()
-        {
-            return dbCon.GetCustomers();
-        }
+        #endregion
+   
     }
 }

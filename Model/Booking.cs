@@ -29,12 +29,24 @@ namespace Model
             Roomtype = roomType;
             RoomID = roomId;
             ReservationID = reservationID;
-            BStatus = BookStatus.Confirmed;
+            BStatus = BookStatus.Confirmed;//????????????应该从数据库读取？
         }
-
-        public Booking()
+        /// <summary>
+        /// 手动生成新单，单号根据时间自动生成
+        /// </summary>
+        /// <param name="id"></param>
+        public Booking(DateTime start, DateTime end, string reserveTime,
+                       string contractID, RoomType roomType, string roomId, string reservationID)
         {
             ID = IClock.GetBookingCount;
+            StartDate = start;
+            EndDate = end;
+            ReserveTime = reserveTime;
+            ContractID = contractID;
+            Roomtype = roomType;
+            RoomID = roomId;
+            ReservationID = reservationID;
+            BStatus = BookStatus.Confirmed;
         }
     }
 }

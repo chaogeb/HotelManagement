@@ -20,7 +20,7 @@ namespace Model
         public string Company           { get; set; }   //顾客所在单位
         public string Address           { get; set; }   //地址
         public string City              { get; set; }   //顾客居住的城市
-
+        
         public Customer(string id, string name, CustomerGender gender, int age, string phone,
             string fax, string idcard, string roomid, string company, string address, string city)
         {
@@ -37,9 +37,33 @@ namespace Model
             City = city;
             bookings = new List<IBooking>();
         }
-        public Customer()
+        /// <summary>
+        /// 根据顾客提供的信息，生成新ID，用于记录该顾客信息
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="gender"></param>
+        /// <param name="age"></param>
+        /// <param name="phone"></param>
+        /// <param name="fax"></param>
+        /// <param name="idcard"></param>
+        /// <param name="roomid"></param>
+        /// <param name="company"></param>
+        /// <param name="address"></param>
+        /// <param name="city"></param>
+        public Customer(string name, CustomerGender gender, int age, string phone,
+            string fax, string idcard, string roomid, string company, string address, string city)
         {
             ID = IClock.GetCustomerCount;
+            Name = name;
+            Gender = gender;
+            Age = age;
+            Phone = phone;
+            Fax = fax;
+            IDcard = idcard;
+            RoomID = roomid;
+            Company = company;
+            Address = address;
+            City = city;
             bookings = new List<IBooking>();
         }
 
