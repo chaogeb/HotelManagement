@@ -19,9 +19,10 @@ namespace ControllerLayer
         }
 
         // Adds a room to the database.
-        internal IRoom CreateRoom(string ID, string roomNum, double price, RoomType rType, RoomStatus rStatus)
+        internal IRoom CreateRoom(string roomNum, RoomType rType)
         {
-            return dbCon.CreateRoom(ID, roomNum, price, rType, rStatus);
+            IRoom room = new Room();
+            return dbCon.CreateRoom(room.ID, roomNum, rType,RoomStatus.Idle);
         }
 
         // Returns a IRoom from id.
@@ -53,7 +54,7 @@ namespace ControllerLayer
 
 
         //Return a list of available rooms
-        internal List<IRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate, int hotelID = -1)
+        internal List<IRoom> GetAvailableRooms(RoomType roomtype, DateTime startdate, DateTime enddate)
         {
             List<IBooking> bookings = dbCon.GetBookings();
             List<IRoom> rooms = GetRooms(), temp;

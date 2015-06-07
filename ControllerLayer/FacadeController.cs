@@ -10,14 +10,14 @@ namespace ControllerLayer
     {
         private SQLiteController dbCon;
         private HotelController hotelCon;
-        private CustomerController customerCon;
+        private BookingController customerCon;
 
         private static FacadeController instance;
         private FacadeController(string user, string pass)
         {
             //dbCon = new SQLiteController(user, pass);
             hotelCon = new HotelController(dbCon);
-            customerCon = new CustomerController(dbCon);
+            customerCon = new BookingController(dbCon);
         }
 
         public static FacadeController GetInstance(string user, string pass)

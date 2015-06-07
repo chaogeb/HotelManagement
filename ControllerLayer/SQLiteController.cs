@@ -576,7 +576,7 @@ namespace ControllerLayer
             return GetReservation(id);
         }
 
-        internal List<IReservation> GetReservations(string reservationID)
+        internal List<IReservation> GetReservation(string reservationID)
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("GetReservations", sqlCon);
@@ -610,7 +610,7 @@ namespace ControllerLayer
             }
         }
 
-        internal List<IReservation> GetReservation()
+        internal List<IReservation> GetReservations()
         {
             connect();
             SQLiteCommand cmd = new SQLiteCommand("GetAllReservations", sqlCon);
