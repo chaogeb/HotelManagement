@@ -15,5 +15,7 @@ namespace Interface
         string RoomID           { get; set; }   //房间ID
         string ReservationID    { get; set; }   //结账单号
         BookStatus BStatus      { get; set; }   //订单状态
+
+        string id { get; set; }
     }
 }

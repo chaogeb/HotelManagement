@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FacadeController.cs" />
-    <Compile Include="CustomerController.cs" />
+    <Compile Include="BookingController.cs" />
     <Compile Include="HotelController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLiteController.cs" />
