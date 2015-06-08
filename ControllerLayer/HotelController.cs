@@ -53,7 +53,7 @@ namespace ControllerLayer
 
 
         //Return a list of available rooms
-        internal List<IRoom> GetAvailableRooms(RoomType roomtype, DateTime startdate, DateTime enddate)
+        internal List<IRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate)
         {
             List<IBooking> bookings = dbCon.GetBookings();
             List<IRoom> rooms = GetRooms(), temp;

@@ -17,7 +17,7 @@ namespace ControllerLayer
         {
             dbCon = new SQLiteController();
             hotelCon = new HotelController(dbCon);
-            customerCon = new BookingController(dbCon);
+            customerCon = new BookingController(dbCon, hotelCon);
         }
 
         //public static FacadeController GetInstance(string user, string pass)
@@ -43,9 +43,9 @@ namespace ControllerLayer
         //    return customerCon.DeleteBooking(cus, bookingID);
         //}
 
-        public IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, double thisprice, string reservationid)
+        public IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
         {
-            return customerCon.CreateBooking(IClock.GetBookingID, start, end, reservetime, contractid, roomtype, thisprice, reservationid);
+            return customerCon.CreateBooking(start, end, reservetime, contractid, roomtype, reservationid);
         }
 
         public List<IBooking> GetActiveBookings(string customerID)
@@ -58,7 +58,7 @@ namespace ControllerLayer
 
         public void CheckInCustomer(ICustomer customer)
         {
-            customerCon.CheckInCustomer(customer);
+            //customerCon.CheckInCustomer(customer);
         }
 
         public ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard, string roomid, string company, string address)
@@ -90,9 +90,9 @@ namespace ControllerLayer
 
         #region Room Methods
 
-        public IRoom CreateRoom(string id, string roomNum, RoomType rType, RoomStatus rStatus)
+        public IRoom CreateRoom(string roomNum, RoomType rType)
         {
-            return hotelCon.CreateRoom(id, roomNum, rType, rStatus);
+            return hotelCon.CreateRoom(roomNum, rType);
         }
 
         public IRoom GetRoom(string roomID)

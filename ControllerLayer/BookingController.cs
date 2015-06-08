@@ -5,7 +5,6 @@ using System.Text;
 using Interface;
 using Model;
 
-//made by 廖开翔
 namespace ControllerLayer
 {
     internal class BookingController
@@ -31,10 +30,27 @@ namespace ControllerLayer
         {
             return dbCon.GetCustomers();
         }
+
+        /// <summary>
+        /// 通过电话擦找联系人
+        /// </summary>
+        /// <param name="customerPhone"></param>
+        /// <returns></returns>
+        internal ICustomer GetCustomerViaPhone(string customerPhone)
+        { 
+            var list = dbCon.GetCustomers(); 
+            foreach (ICustomer customer in list) 
+            { 
+                if (customer.Phone == customerPhone) 
+                    return customer; 
+            } 
+            return null; 
+        }
+
         /// <summary>
         /// 在checkin时给顾客分配房间RoomID
         /// </summary>
-        /// <param name="cus"></param>
+        /// <param name="customer"></param>
         internal void CheckInCustomer(ICustomer cus,string RoomID)
         {
             cus.RoomID = RoomID;
@@ -55,11 +71,10 @@ namespace ControllerLayer
         #endregion 
 
         #region Booking
-        internal IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype)
+        internal IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
         {
-            IBooking book = new Booking();
-            IRoomPrice roomprice = dbCon.GetRprice(roomtype);
-            return dbCon.CreateBooking(book.ID, start, end, reservetime, contractid, roomtype,roomprice.Price , "000",null);
+            IRoomPrice roomprice = dbCon.GetRoomPrice(roomtype);
+            return dbCon.CreateBooking(IClock.GetBookingID, start, end, reservetime, contractid, roomtype, roomprice.Price , reservationid);
         }
         
         internal List<IBooking> GetActiveBookings(string reservationID)
@@ -151,7 +166,7 @@ namespace ControllerLayer
             foreach (IBooking book in books)
             {
                 book.ReservationID = reservationID;
-                IRoomPrice roomprice=dbCon.GetRprice(book.Roomtype);
+                IRoomPrice roomprice=dbCon.GetRoomPrice(book.Roomtype);
                 payment += roomprice.Price;
                 downpayment = reservation.DownPayment;
                 dbCon.UpdateBooking(book);
