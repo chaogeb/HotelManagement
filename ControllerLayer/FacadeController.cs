@@ -1,41 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Interface;
 
 namespace ControllerLayer
 {
-    class FacadeController
+    public class FacadeController
     {
         private SQLiteController dbCon;
         private HotelController hotelCon;
         private CustomerController customerCon;
 
         private static FacadeController instance;
-        private FacadeController(string user, string pass)
+
+        //private FacadeController(string user, string pass)
+        private FacadeController()
         {
-            //dbCon = new SQLiteController(user, pass);
+            dbCon = new SQLiteController();
             hotelCon = new HotelController(dbCon);
             customerCon = new CustomerController(dbCon);
         }
 
-        public static FacadeController GetInstance(string user, string pass)
-        {
-            if (instance == null)
-            {
-                instance = new FacadeController(user, pass);
-            }
-            return instance;
-        }
-
+        //public static FacadeController GetInstance(string user, string pass)
         public static FacadeController GetInstance()
         {
             if (instance == null)
-                throw new Exception("Not authenticated!");
+            {
+                //instance = new FacadeController(user, pass);
+                instance = new FacadeController();
+            }
             return instance;
         }
-
+        
         public bool Authenticated()
         {
             return dbCon.Authenticated();
@@ -43,14 +38,14 @@ namespace ControllerLayer
 
         #region Booking Methods
 
-        public bool DeleteBooking(ICustomer cus, string bookingID)
-        {
-            return customerCon.DeleteBooking(cus, bookingID);
-        }
+        //public bool DeleteBooking(ICustomer cus, string bookingID)
+        //{
+        //    return customerCon.DeleteBooking(cus, bookingID);
+        //}
 
-        public IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype,double thisprice, string roomid, string reservationid)
+        public IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, double thisprice, string reservationid)
         {
-            return customerCon.CreateBooking(id, start, end, reservetime, contractid, roomtype,thisprice, roomid,reservationid);
+            return customerCon.CreateBooking(IClock.GetBookingID, start, end, reservetime, contractid, roomtype, thisprice, reservationid);
         }
 
         public List<IBooking> GetActiveBookings(string customerID)
@@ -70,27 +65,22 @@ namespace ControllerLayer
         {
             return customerCon.CreateCustomer(id ,name, gender,age, phone,fax, idcard, roomid, company,address);
         }
-
-        /// <summary>
-        /// Made by: Andreana
-        /// </summary>
-        /// <param name="customerID"></param>
-        /// <returns></returns>
+        
         public ICustomer GetCustomer(string customerID)
         {
             return customerCon.GetCustomer(customerID);
+        }
+
+        public ICustomer GetCustomerViaPhone(string customerPhone)
+        {
+            return customerCon.GetCustomerViaPhone(customerPhone);
         }
 
         public List<ICustomer> GetCustomers()
         {
             return customerCon.GetCustomers();
         }
-
-        public bool DeleteCustomer(string customerID)
-        {
-            return customerCon.DeleteCustomer(customerID);
-        }
-
+        
         public ICustomer UpdateCustomer(ICustomer cus)
         {
             return customerCon.UpdateCustomer(cus);
@@ -100,9 +90,9 @@ namespace ControllerLayer
 
         #region Room Methods
 
-        public IRoom CreateRoom(string id, string roomNum, double price, RoomType rType, RoomStatus rStatus)
+        public IRoom CreateRoom(string id, string roomNum, RoomType rType, RoomStatus rStatus)
         {
-            return hotelCon.CreateRoom(id, roomNum, price, rType, rStatus);
+            return hotelCon.CreateRoom(id, roomNum, rType, rStatus);
         }
 
         public IRoom GetRoom(string roomID)
@@ -123,6 +113,18 @@ namespace ControllerLayer
         public List<IRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate)
         {
             return hotelCon.GetAvailableRooms(roomtype, startdate, enddate);
+        }
+        #endregion
+
+        #region Clock Method
+        public void GetClock()
+        {
+            if (!dbCon.GetClock())
+                dbCon.CreateClock();
+        }
+        public void SetClock()
+        {
+            dbCon.UpdateClock();
         }
         #endregion
     }

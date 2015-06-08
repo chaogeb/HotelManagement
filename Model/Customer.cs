@@ -36,7 +36,7 @@ namespace Model
         }
         public Customer()
         {
-            ID = IClock.GetCustomerCount;
+            ID = IClock.GetCustomerID;
         }
 
     }

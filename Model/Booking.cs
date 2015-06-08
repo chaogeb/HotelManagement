@@ -36,7 +36,7 @@ namespace Model
 
         public Booking()
         {
-            ID = IClock.GetBookingCount;
+            ID = IClock.GetBookingID;
         }
     }
 }

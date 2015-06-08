@@ -22,7 +22,7 @@ namespace Model
         }
         public Room()
         {
-            ID = IClock.GetRoomCount;
+            ID = IClock.GetRoomID;
         }
     }
 

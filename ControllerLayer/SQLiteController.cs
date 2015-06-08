@@ -2,11 +2,6 @@
 using Model;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Data;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 
 /// <summary>
@@ -21,12 +16,8 @@ namespace ControllerLayer
     {
         #region Misc
 
-        SQLiteConnection sqlCon = null;
-
-        /// <summary>
-        /// Opens the connection to the database.
-        /// </summary>
-        /// <returns>If success.</returns>
+        private SQLiteConnection sqlCon = null;
+        
         private void connect()
         {
             try
@@ -38,11 +29,7 @@ namespace ControllerLayer
                 throw new Exception("Connection to database failed!");
             }
         }
-
-        /// <summary>
-        /// Closes the connection to the database.
-        /// </summary>
-        /// <returns>Id success.</returns>
+        
         private void disconnect()
         {
             try
@@ -55,34 +42,30 @@ namespace ControllerLayer
             }
         }
 
-        internal void SQLiteController()
+        internal SQLiteController()
         {
-            string dbPath = "Data Source =" + Environment.CurrentDirectory + "/HotelDataBase.db";
+            string dbPath = "Data Source = " + Environment.CurrentDirectory + "/HotelDataBase.db";
             sqlCon = new SQLiteConnection(dbPath);
-            sqlCon.Open();//打开数据库，若文件不存在会自动创建   
-            string sql1 = "CREATE TABLE IF NOT EXISTS Room(ROOMID varchar, ROOMNUM varchar,RTYPE varchar,RSTATUS varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable1 = new SQLiteCommand(sql1, sqlCon);
-            cmdCreateTable1.ExecuteNonQuery();//如果表不存在，创建数据表  
- 
-            string sql2 = "CREATE TABLE IF NOT EXISTS Customer(CUSTOMERID varchar, NAME varchar, GENDER varchar,AGE varchar,PHONE varchar,FAX varchar,IDCARD varchar,ROOMTD varchar,COMPANY varchar,ADDRESS avrchar,CITY varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable2 = new SQLiteCommand(sql2, sqlCon);
-            cmdCreateTable2.ExecuteNonQuery();//如果表不存在，创建数据表  
+            sqlCon.Open();  //打开数据库，若文件不存在会自动创建
 
-            string sql3 = "CREATE TABLE IF NOT EXISTS Booking(BOOKINGID varchar, STARTDATE varchar, ENDDATE varchar,RESERVETIME varchar,CONTRACTID varchar,ROOMTYPE varchar,THISPRICE double,ROOMID varchar,RESERVATION varchar,BSTATUS varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable3 = new SQLiteCommand(sql3, sqlCon);
-            cmdCreateTable3.ExecuteNonQuery();//如果表不存在，创建数据表  
+            string sql = "CREATE TABLE IF NOT EXISTS Room(ROOMID varchar, ROOMNUM varchar,RTYPE varchar,RSTATUS varchar );";//建表语句   
+            SQLiteCommand cmdCreateTable = new SQLiteCommand(sql, sqlCon);
+            cmdCreateTable.ExecuteNonQuery();  //如果表不存在，创建数据表
 
-            string sql4 = "CREATE TABLE IF NOT EXISTS Reservation(RESERVATIONID varchar, PAYMENT varchar, DOWNPAYMENT varchar,RSTATUS varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable4 = new SQLiteCommand(sql4, sqlCon);
-            cmdCreateTable4.ExecuteNonQuery();//如果表不存在，创建数据表  
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Customer(CUSTOMERID varchar, NAME varchar, GENDER varchar,AGE varchar,PHONE varchar,FAX varchar,IDCARD varchar,ROOMTD varchar,COMPANY varchar,ADDRESS avrchar,CITY varchar );";//建表语句   
+            cmdCreateTable.ExecuteNonQuery();  //如果表不存在，创建数据表
 
-            string sql5 = "CREATE TABLE IF NOT EXISTS Clock(TIME varchar, COUNTROOM varchar, COUNTCUSTOMER varchar,COUNTBOOKING varchar,COUNTRESERVE varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable5 = new SQLiteCommand(sql5, sqlCon);
-            cmdCreateTable5.ExecuteNonQuery();//如果表不存在，创建数据表  
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Booking(BOOKINGID varchar, STARTDATE varchar, ENDDATE varchar,RESERVETIME varchar,CONTRACTID varchar,ROOMTYPE varchar,THISPRICE double,ROOMID varchar,RESERVATION varchar,BSTATUS varchar );";//建表语句   
+            cmdCreateTable.ExecuteNonQuery();  //如果表不存在，创建数据表
 
-            string sql6 = "CREATE TABLE IF NOT EXISTS RoomPrice(RTYPE varchar, RPRICE varchar );";//建表语句   
-            SQLiteCommand cmdCreateTable6 = new SQLiteCommand(sql5, sqlCon);
-            cmdCreateTable5.ExecuteNonQuery();//如果表不存在，创建数据表  
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Reservation(RESERVATIONID varchar, PAYMENT varchar, DOWNPAYMENT varchar,RSTATUS varchar );";//建表语句   
+            cmdCreateTable.ExecuteNonQuery();  //如果表不存在，创建数据表
+
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Clock(TIME varchar, COUNTROOM varchar, COUNTCUSTOMER varchar,COUNTBOOKING varchar,COUNTRESERVE varchar );";//建表语句   
+            cmdCreateTable.ExecuteNonQuery();   //如果表不存在，创建数据表
+
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS RoomPrice(RTYPE varchar, RPRICE varchar );";//建表语句   
+            cmdCreateTable.ExecuteNonQuery();   //如果表不存在，创建数据表
 
             sqlCon.Close();
         }
@@ -110,26 +93,23 @@ namespace ControllerLayer
         internal ICustomer GetCustomer(string id)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetCustomer", sqlCon);
-
-            cmd.Parameters.AddWithValue("@CUSTOMERID", id);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Customer WHERE CUSTOMERID = " + id, sqlCon);
+            
             try
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
                 rdr.Read();
-                return new Customer()
-                {
-                    Name = rdr["NAME"].ToString(),
-                    Gender = (CustomerGender)Enum.Parse(typeof(CustomerGender), rdr["GENDER"].ToString()),
-                    Age = int.Parse(rdr["AGE"].ToString()),
-                    Phone = rdr["PHONE"].ToString(),
-                    Fax = rdr["FAX"].ToString(),
-                    IDcard = rdr["IDCARD"].ToString(),
-                    RoomID = rdr["ROOMID"].ToString(),
-                    Company = rdr["COMPANY"].ToString(),
-                    Address = rdr["ADDRESS"].ToString()
-                };
+                return new Customer(id,
+                    rdr["NAME"].ToString(),
+                    (CustomerGender)Enum.Parse(typeof(CustomerGender), rdr["GENDER"].ToString()),
+                    int.Parse(rdr["AGE"].ToString()),
+                    rdr["PHONE"].ToString(),
+                    rdr["FAX"].ToString(),
+                    rdr["IDCARD"].ToString(),
+                    rdr["ROOMID"].ToString(),
+                    rdr["COMPANY"].ToString(),
+                    rdr["ADDRESS"].ToString()
+                );
             }
             catch (Exception ex)
             {
@@ -146,16 +126,14 @@ namespace ControllerLayer
             connect();
 
             List<ICustomer> customers = new List<ICustomer>();
-            SQLiteCommand cmd = new SQLiteCommand("GetCustomers", sqlCon);
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Customer", sqlCon);
             SQLiteDataReader rdr = cmd.ExecuteReader();
-
-
+            
             try
             {
                 while (rdr.Read())
                 {
                     customers.Add(new Customer
-                        
                         (
                           rdr["CUSTOMERID"].ToString(),
                           rdr["NAME"].ToString(),
@@ -184,18 +162,19 @@ namespace ControllerLayer
         internal ICustomer UpdateCustomer(ICustomer customer)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("UpdateCustomer", sqlCon);
+            SQLiteCommand cmd = new SQLiteCommand("UPDATE Customer SET NAME=:NAME,GENDER=:GENDER,AGE=:AGE,PHONE=:PHONE," +
+                "FAX=:FAX,IDCARD=:IDCARD,ROOMID=:ROOMID,COMPANY=:COMPANY,ADDRESS=:ADDRESS WHERE CUSTOMERID=:CUSTOMERID", sqlCon);
 
-            cmd.Parameters.AddWithValue("@CUSTOMERID", customer.ID);
-            cmd.Parameters.AddWithValue("@NAME", customer.Name);
-            cmd.Parameters.AddWithValue("@GENDER", customer.Gender);
-            cmd.Parameters.AddWithValue("@AGE", customer.Age);
-            cmd.Parameters.AddWithValue("@PHONE", customer.Phone);
-            cmd.Parameters.AddWithValue("@FAX", customer.Fax);
-            cmd.Parameters.AddWithValue("@IDCARD", customer.IDcard);
-            cmd.Parameters.AddWithValue("@ROOMID", customer.RoomID);
-            cmd.Parameters.AddWithValue("@COMPANY", customer.Company);
-            cmd.Parameters.AddWithValue("@ADDRESS", customer.Address);
+            cmd.Parameters.AddWithValue("CUSTOMERID", customer.ID);
+            cmd.Parameters.AddWithValue("NAME", customer.Name);
+            cmd.Parameters.AddWithValue("GENDER", customer.Gender);
+            cmd.Parameters.AddWithValue("AGE", customer.Age);
+            cmd.Parameters.AddWithValue("PHONE", customer.Phone);
+            cmd.Parameters.AddWithValue("FAX", customer.Fax);
+            cmd.Parameters.AddWithValue("IDCARD", customer.IDcard);
+            cmd.Parameters.AddWithValue("ROOMID", customer.RoomID);
+            cmd.Parameters.AddWithValue("COMPANY", customer.Company);
+            cmd.Parameters.AddWithValue("ADDRESS", customer.Address);
 
             try
             {
@@ -215,9 +194,7 @@ namespace ControllerLayer
         internal ICustomer CreateCustomer(string id,string name, CustomerGender gender,int age, string phone,string fax,string idcard,string roomid, string company,string address)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("CreateCustomer", sqlCon);
-
-            cmd.Parameters["@CUSTOMERID"].Direction = ParameterDirection.Output;
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Customer VALUES (@CUSTOMERID, @NAME, @GENDER, @AGE, @PHONE, @FAX, @IDCARD, @ROOMID, @COMPANY, @ADDRESS)", sqlCon);
 
             cmd.Parameters.AddWithValue("@CUSTOMERID", id);
             cmd.Parameters.AddWithValue("@NAME", name);
@@ -255,8 +232,7 @@ namespace ControllerLayer
             connect();
 
             List<IRoom> temp = new List<IRoom>();
-            SQLiteCommand cmd = new SQLiteCommand("GetRooms", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Room", sqlCon);
             SQLiteDataReader r = cmd.ExecuteReader();
 
             RoomType rType;
@@ -289,11 +265,8 @@ namespace ControllerLayer
         internal IRoom GetRoom(string id)
         {
             connect();
-
-            SQLiteCommand cmd = new SQLiteCommand("GetRoom", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@ROOMID", id);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Room WHERE ROOMID = " + id, sqlCon);
+            
             try
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -320,11 +293,8 @@ namespace ControllerLayer
         {
             connect();
 
-            SQLiteCommand cmd = new SQLiteCommand("CreateRoom", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters["@ROOMID"].Direction = ParameterDirection.Output;
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Room VALUES (@ROOMID,@ROOMNUM,@RTYPE,@RSTATUS)", sqlCon);
+            
             cmd.Parameters.AddWithValue("@ROOMID", id);
             cmd.Parameters.AddWithValue("@ROOMNUM", roomNum);
             cmd.Parameters.AddWithValue("@RTYPE", rType.ToString());
@@ -332,20 +302,19 @@ namespace ControllerLayer
 
             cmd.ExecuteNonQuery();
             return GetRoom(id);
-           
         }
 
         internal IRoom UpdateRoom(IRoom room)
         {
             connect();
 
-            SQLiteCommand cmd = new SQLiteCommand("UpdateRoom", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters.AddWithValue("@ROOMID", room.ID);
-            cmd.Parameters.AddWithValue("@ROOMNUM", room.RoomNum);
-            cmd.Parameters.AddWithValue("@RTYPE", room.RType.ToString());
-            cmd.Parameters.AddWithValue("@RSTATUS", room.RStatus.ToString());
+            SQLiteCommand cmd = new SQLiteCommand("UPDATE Room SET ROOMNUM=:ROOMNUM,RTYPE=:RTYPE,RSTATUS=:RSTATUS" +
+                " WHERE ROOMID=:ROOMID", sqlCon);
+            
+            cmd.Parameters.AddWithValue("ROOMID", room.ID);
+            cmd.Parameters.AddWithValue("ROOMNUM", room.RoomNum);
+            cmd.Parameters.AddWithValue("RTYPE", room.RType.ToString());
+            cmd.Parameters.AddWithValue("RSTATUS", room.RStatus.ToString());
 
             try
             {
@@ -370,10 +339,8 @@ namespace ControllerLayer
         {
             connect();
             Booking book;
-            SQLiteCommand cmd = new SQLiteCommand("GetBooking", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@BOOKINGID", bookingID);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Booking WHERE BOOKINGID = " + bookingID, sqlCon);
+            
             try
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -402,14 +369,11 @@ namespace ControllerLayer
             return book;
         }
 
-        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid,  RoomType roomtype,double thisprice,string roomid,string reservationid)
+        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid,  RoomType roomtype, double thisprice, string reservationid)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("CreateBooking", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters["@BOOKINGID"].Direction = ParameterDirection.Output;
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Booking VALUES (@BOOKINGID,@STARTDATE,@ENDDATE,@RESERVETIME,@CONTRACTID,@ROOMTYPE,@THISPRICE,@RESERVATIONID,@BSTATUS)", sqlCon);
+            
             cmd.Parameters.AddWithValue("@BOOKINGID", id);
             cmd.Parameters.AddWithValue("@STARTDATE", start);
             cmd.Parameters.AddWithValue("@ENDDATE", end);
@@ -417,7 +381,7 @@ namespace ControllerLayer
             cmd.Parameters.AddWithValue("@CONTRACTID", contractid);
             cmd.Parameters.AddWithValue("@ROOMTYPE", roomtype);
             cmd.Parameters.AddWithValue("@THISPRICE", thisprice);
-            cmd.Parameters.AddWithValue("@ROOMID", roomid);
+            //cmd.Parameters.AddWithValue("@ROOMID", roomid);
             cmd.Parameters.AddWithValue("@RESERVATIONID", reservationid);
             cmd.Parameters.AddWithValue("@BSTATUS", "Confirmed");
 
@@ -440,10 +404,8 @@ namespace ControllerLayer
         internal List<IBooking> GetBookings(string customerID)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetBookings", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@CUSTOMERID", customerID);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Booking WHERE CONTRACTID = " + customerID, sqlCon);
+            
             List<IBooking> bookings = new List<IBooking>();
             try
             {
@@ -479,8 +441,7 @@ namespace ControllerLayer
         internal List<IBooking> GetBookings()
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetAllBookings", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Booking", sqlCon);
 
             List<IBooking> bookings = new List<IBooking>();
             try
@@ -513,17 +474,48 @@ namespace ControllerLayer
             }
             return bookings;
         }
+
+        internal IBooking UpdateBooking(IBooking booking)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("UPDATE Booking SET RESERVETIME=:RESERVETIME,CONTRACTID=:CONTRACTID,ROOMID=:ROOMID,BSTATUS=:BSTATUS WHERE BOOKINGID=:BOOKINGID", sqlCon);
+            
+            cmd.Parameters.AddWithValue("BOOKINGID", booking.ID);
+            //cmd.Parameters.AddWithValue("STARTDATE", booking.StartDate);
+            //cmd.Parameters.AddWithValue("ENDDATE", booking.EndDate);
+            cmd.Parameters.AddWithValue("RESERVETIME", booking.ReserveTime);
+            cmd.Parameters.AddWithValue("CONTRACTID", booking.ContractID);
+            //cmd.Parameters.AddWithValue("ROOMTYPE", booking.Roomtype);
+            //cmd.Parameters.AddWithValue("THISPRICE", booking.ThisPrice);
+            cmd.Parameters.AddWithValue("ROOMID", booking.RoomID);
+            //cmd.Parameters.AddWithValue("RESERVATIONID", booking.ReservationID);
+            cmd.Parameters.AddWithValue("BSTATUS", booking.BStatus);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Booking with ID: " + booking.ID + " could not be updated!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return GetBooking(booking.ID);
+        }
+
         #endregion
 
         #region Reservation Procedures
+
         internal IReservation GetReservation(string ReservationID)
         {
             connect();
             Reservation reservation;
-            SQLiteCommand cmd = new SQLiteCommand("GetReservation", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@BOOKINGID", ReservationID);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Reservation WHERE RESERVATIONID = " + ReservationID, sqlCon);
+            
             try
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -538,7 +530,7 @@ namespace ControllerLayer
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to parse/create new booking!\n" + ex.Message);
+                throw new Exception("Failed to parse/create reservation!\n" + ex.Message);
             }
             finally
             {
@@ -550,11 +542,8 @@ namespace ControllerLayer
         internal IReservation CreateReservation(string id, double payment, double downpayment, ReservationStatus rstatus)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("CreateReservation", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            cmd.Parameters["@RESERVATIONID"].Direction = ParameterDirection.Output;
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Reservation VALUES (@RESERVATIONID,@PAYMENT,@DOWNPAYMENT,@RSTATUS)", sqlCon);
+            
             cmd.Parameters.AddWithValue("@RESERVATIONID", id);
             cmd.Parameters.AddWithValue("@PAYMENT", payment);
             cmd.Parameters.AddWithValue("@DOWNPAYMENT", downpayment);
@@ -567,7 +556,7 @@ namespace ControllerLayer
             }
             catch (Exception ex)
             {
-                throw new Exception("Could not add booking to database!\n" + ex.Message);
+                throw new Exception("Could not add reservation to database!\n" + ex.Message);
             }
             finally
             {
@@ -576,13 +565,11 @@ namespace ControllerLayer
             return GetReservation(id);
         }
 
-        internal List<IReservation> GetReservations(string reservationID)
+        internal List<IReservation> GetReservations()
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetReservations", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@RESERVATIONID", reservationID);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Reservation", sqlCon);
+            
             List<IReservation> reservations = new List<IReservation>();
             try
             {
@@ -602,7 +589,7 @@ namespace ControllerLayer
             }
             catch (Exception ex)
             {
-                throw new Exception("Could not parse bookings!\n" + ex.Message);
+                throw new Exception("Could not parse reservations!\n" + ex.Message);
             }
             finally
             {
@@ -610,74 +597,41 @@ namespace ControllerLayer
             }
         }
 
-        internal List<IReservation> GetReservation()
+        internal IReservation UpdateReservation(IReservation reservation)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetAllReservations", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            List<IReservation> reservations = new List<IReservation>();
-            try
-            {
-                SQLiteDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
-                {
-                    reservations.Add(new Reservation
-                    (
-                        rdr["RESERVATIONID"].ToString(),
-                        double.Parse(rdr["PAYMENT"].ToString()),
-                        double.Parse(rdr["DOWNPAYMENT"].ToString()),
-                        (ReservationStatus)Enum.Parse(typeof(ReservationStatus), rdr["RSTATUS"].ToString())
-                    ));
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Could not parse bookings!\n" + ex.Message);
-            }
-            finally
-            {
-                disconnect();
-            }
-            return reservations;
-        }
-
-        #endregion
-
-        #region RoomPrice Procedures
-
-        
-        internal bool DeleteRoomPrice(RoomType RType)
-        {
-            connect();
-            SQLiteCommand cmd = new SQLiteCommand("DeleteRoomPrice", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@RTYPE", RType);
-
+            SQLiteCommand cmd = new SQLiteCommand("Update Reservation Set PAYMENT=:PAYMENT,DOWNPAYMENT=:DOWNPAYMENT,RSTATUS=:RSTATUS Where RESERVATIONID=:RESERVATIONID", sqlCon);
+            
+            cmd.Parameters.AddWithValue("RESERVATIONID", reservation.ID);
+            cmd.Parameters.AddWithValue("PAYMENT", reservation.Payment);
+            cmd.Parameters.AddWithValue("DOWNPAYMENT", reservation.DownPayment);
+            cmd.Parameters.AddWithValue("RSTATUS", reservation.RStatus);
+            
             try
             {
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete Roomprice from databse!\n" + ex.Message);
+                throw new Exception("Reservation with ID: " + reservation.ID + " could not be updated!\n" + ex.Message);
             }
             finally
             {
                 disconnect();
             }
-            return true;
+            return GetReservation(reservation.ID);
         }
+        
+        #endregion
 
-        internal IRoomPrice GetRprice(RoomType RType)
+        #region RoomPrice Procedures
+        
+        internal IRoomPrice GetRoomPrice(RoomType RType)
         {
             connect();
             RoomPrice roomprice;
-            SQLiteCommand cmd = new SQLiteCommand("GetRprice", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@RTYPE", RType);
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM RoomPrice WHERE RTYPE = " + RType.ToString(), sqlCon);
+            
             try
             {
                 SQLiteDataReader rdr = cmd.ExecuteReader();
@@ -699,12 +653,11 @@ namespace ControllerLayer
             return roomprice;
         }
 
-        internal List<IRoomPrice> CreateRoomPrice(RoomType rType, double price)
+        internal IRoomPrice CreateRoomPrice(RoomType rType, double price)
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("CreateRoomPrice", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO RoomPrice VALUES (@RTYPE,@RPRICE)", sqlCon);
+            
             cmd.Parameters.AddWithValue("@RTYPE", rType);
             cmd.Parameters.AddWithValue("@RPRICE", price);
 
@@ -725,44 +678,11 @@ namespace ControllerLayer
             return GetRoomPrice(roomtype);
         }
 
-        internal List<IRoomPrice> GetRoomPrice(RoomType roomtype)
+        internal List<IRoomPrice> GetRoomPrices()
         {
             connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetRoomPrice", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@RTYPE", roomtype);
-
-            List<IRoomPrice> roomprice = new List<IRoomPrice>();
-            try
-            {
-                SQLiteDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
-                {
-                    roomprice.Add(new RoomPrice
-                    (
-                        (RoomType)Enum.Parse(typeof(RoomType), rdr["BTYPE"].ToString()),
-                        double.Parse(rdr["RPRICE"].ToString())
-                    ));
-                }
-                return roomprice;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Could not parse roomprice!\n" + ex.Message);
-            }
-            finally
-            {
-                disconnect();
-            }
-        }
-
-        internal List<IRoomPrice> GetRoomPrice()
-        {
-            connect();
-            SQLiteCommand cmd = new SQLiteCommand("GetAllRoomPrice", sqlCon);
-            cmd.CommandType = CommandType.StoredProcedure;
-
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM RoomPrice", sqlCon);
+            
             List<IRoomPrice> roomprice = new List<IRoomPrice>();
             try
             {
@@ -786,6 +706,116 @@ namespace ControllerLayer
                 disconnect();
             }
             return roomprice;
+        }
+
+        internal IRoomPrice UpdateRoomPrice(IRoomPrice roomprice)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("Update RoomPrice Set RPRICE=:RPRICE Where RTYPE=:RTYPE", sqlCon);
+
+            cmd.Parameters.AddWithValue("RTYPE", roomprice.RType);
+            cmd.Parameters.AddWithValue("RPRICE", roomprice.Price);
+            
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Room Price of " + roomprice.RType + " could not be updated!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+            return GetRoomPrice(roomprice.RType);
+        }
+
+        #endregion
+
+        #region IClock Procedures
+
+        internal bool GetClock()
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Clock", sqlCon);
+
+            try
+            {
+                SQLiteDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    IClock.SetClock(
+                        DateTime.FromFileTime(long.Parse(rdr["TIME"].ToString())),
+                        int.Parse(rdr["COUNTROOM"].ToString()),
+                        int.Parse(rdr["COUNTCUSTOMER"].ToString()),
+                        int.Parse(rdr["COUNTBOOKING"].ToString()),
+                        int.Parse(rdr["COUNTRESERVE"].ToString())
+                    );
+                }
+                else return false;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to parse/create new clock!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+        }
+
+        internal void CreateClock()
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Clock" +
+                " VALUES (@TIME,@COUNTROOM,@COUNTCUSTOMER,@COUNTBOOKING,@COUNTRESERVE)", sqlCon);
+
+            cmd.Parameters.AddWithValue("@TIME", IClock.Time.ToFileTime());
+            cmd.Parameters.AddWithValue("@COUNTROOM", IClock.CountRoom);
+            cmd.Parameters.AddWithValue("@COUNTCUSTOMER", IClock.CountCustomer);
+            cmd.Parameters.AddWithValue("@COUNTBOOKING", IClock.CountBooking);
+            cmd.Parameters.AddWithValue("@COUNTRESERVE", IClock.CountReserv);
+            
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not add Clock to database!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+        }
+
+        internal void UpdateClock()
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("Update Clock Set TIME=:TIME,COUNTROOM=:COUNTROOM,COUNTCUSTOMER=:COUNTCUSTOMER," +
+               "COUNTBOOKING=:COUNTBOOKING,COUNTRESERVE=:COUNTRESERVE", sqlCon);
+
+            cmd.Parameters.AddWithValue("TIME", IClock.Time.ToFileTime());
+            cmd.Parameters.AddWithValue("COUNTROOM", IClock.CountRoom);
+            cmd.Parameters.AddWithValue("COUNTCUSTOMER", IClock.CountCustomer);
+            cmd.Parameters.AddWithValue("COUNTBOOKING", IClock.CountBooking);
+            cmd.Parameters.AddWithValue("COUNTRESERVE", IClock.CountReserv);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Clock could not be updated!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
         }
         #endregion
     }

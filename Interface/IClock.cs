@@ -9,10 +9,10 @@ namespace Interface
     public static class IClock
     {
         public static DateTime Time         { get; set; }   // present date & time
-        private static int CountRoom        { get; set; }   // counter of rooms
-        private static int CountCustomer    { get; set; }   // counter of customers
-        private static int CountBooking     { get; set; }   // counter of bookings
-        private static int CountReserv      { get; set; }   // counter of reservations
+        public static int CountRoom         { get; private set; }   // counter of rooms
+        public static int CountCustomer     { get; private set; }   // counter of customers
+        public static int CountBooking      { get; private set; }   // counter of bookings
+        public static int CountReserv       { get; private set; }   // counter of reservations
 
         static IClock()
         {
@@ -22,8 +22,36 @@ namespace Interface
             CountBooking = 0;
             CountReserv = 0;
         }
-        
-        public static string GetReservCount
+
+        public static void SetClock(DateTime time, int croom, int ccustomer, int cbooking, int creserv)
+        {
+            Time = time;
+            CountRoom = croom;
+            CountCustomer = ccustomer;
+            CountBooking = cbooking;
+            CountReserv = creserv;
+        }
+        public static void RunClock()
+        {
+            int day = Time.Day;
+            Time = Time.AddMinutes(20);
+            if (Time.Day != day)
+            {
+                CountRoom = 0;
+                CountCustomer = 0;
+                CountBooking = 0;
+                CountReserv = 0;
+            }
+        }
+
+        public static string GetTime
+        {
+            get
+            {
+                return Time.GetDateTimeFormats('f')[0].ToString();
+            }
+        }
+        public static string GetReservID
         {
             get
             {
@@ -32,7 +60,7 @@ namespace Interface
                 return id;
             }
         }
-        public static string GetBookingCount
+        public static string GetBookingID
         {
             get
             {
@@ -41,7 +69,7 @@ namespace Interface
                 return id;
             }
         }
-        public static string GetCustomerCount
+        public static string GetCustomerID
         {
             get
             {
@@ -50,7 +78,7 @@ namespace Interface
                 return id;
             }
         }
-        public static string GetRoomCount
+        public static string GetRoomID
         {
             get
             {

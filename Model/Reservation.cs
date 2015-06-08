@@ -21,7 +21,7 @@ namespace Model
         }
         public Reservation()
         {
-            ID = IClock.GetReservCount;
+            ID = IClock.GetReservID;
         }
     }
 }

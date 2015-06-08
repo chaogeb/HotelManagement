@@ -16,10 +16,10 @@ namespace ControllerLayer
             dbCon = db;
         }
 
-        internal bool DeleteBooking(ICustomer cus, string bookingID)
-        {
-            return dbCon.DeleteBooking(bookingID);
-        }
+        //internal bool DeleteBooking(ICustomer cus, string bookingID)
+        //{
+        //    return dbCon.DeleteBooking(bookingID);
+        //}
 
         internal void CheckInCustomer(ICustomer cus)
         {
@@ -55,19 +55,30 @@ namespace ControllerLayer
             return dbCon.GetCustomer(customerID);
         }
 
-        internal bool DeleteCustomer(string customerID)
+        internal ICustomer GetCustomerViaPhone(string customerPhone)
         {
-            return dbCon.DeleteCustomer(customerID);
+            var list = dbCon.GetCustomers();
+            foreach (ICustomer customer in list)
+            {
+                if (customer.Phone == customerPhone)
+                    return customer;
+            }
+            return null;
         }
+
+        //internal bool DeleteCustomer(string customerID)
+        //{
+        //    return dbCon.DeleteCustomer(customerID);
+        //}
 
         internal ICustomer UpdateCustomer(ICustomer cus)
         {
             return dbCon.UpdateCustomer(cus);
         }
 
-        internal IBooking CreateBooking(string id, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype,double thisprice, string roomid, string reservationid)
+        internal IBooking CreateBooking(string BookingID, DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, double thisprice, string reservationid)
         {
-            IBooking booking = dbCon.CreateBooking(id, start, end, reservetime, contractid, roomtype,thisprice, roomid,reservationid);
+            IBooking booking = dbCon.CreateBooking(BookingID, start, end, reservetime, contractid, roomtype, thisprice, reservationid);
             return booking;
         }
 

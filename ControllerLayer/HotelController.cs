@@ -19,9 +19,9 @@ namespace ControllerLayer
         }
 
         // Adds a room to the database.
-        internal IRoom CreateRoom(string ID, string roomNum, double price, RoomType rType, RoomStatus rStatus)
+        internal IRoom CreateRoom(string ID, string roomNum, RoomType rType, RoomStatus rStatus)
         {
-            return dbCon.CreateRoom(ID, roomNum, price, rType, rStatus);
+            return dbCon.CreateRoom(ID, roomNum, rType, rStatus);
         }
 
         // Returns a IRoom from id.
