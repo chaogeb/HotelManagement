@@ -1,25 +1,26 @@
-﻿<Window x:Class="HotelManagementSystem.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelManagementSystem"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="HotelManagementSystem.MainWindow"
         mc:Ignorable="d"
         Title="Hotel Management System" SizeToContent="WidthAndHeight" MinWidth="800" MinHeight="450">
     <Grid Background="#FFE5E5E5">
-        <TextBlock Name="TimeBlock" Loaded="ShowTimeBlock" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,80,0">0年0月0日 00:00</TextBlock>
-        <ProgressBar Name="TimeProgressBar" Maximum="160" Height="5" VerticalAlignment="Top" IsIndeterminate="False"></ProgressBar>
+        <TextBlock x:Name="TimeBlock" Loaded="ShowTimeBlock" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,80,0"><Run Text="0年0月0日 00:00"/></TextBlock>
+        <ProgressBar x:Name="TimeProgressBar" Maximum="160" Height="5" VerticalAlignment="Top" IsIndeterminate="False"/>
         <TabControl x:Name="MainTab" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="400" MinWidth="750" Margin="0,3,0,0">
 
             <TabItem x:Name="HallTab" Header="大厅" VerticalAlignment="Bottom" Width="130" Height="29">
                 <Grid Background="#FFE5E5E5">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal" Margin="20,12">
-                            <Button x:Name="Button1Btn" Height="23" HorizontalAlignment="Left" Width="75" Click="Button1_Click">Add</Button>
-                            <Button x:Name="Button2Btn" Height="23" HorizontalAlignment="Left" Margin="20,0" Width="75" Click="Button2_Click">Clear</Button>
+                            <Button x:Name="Button1Btn" Height="23" HorizontalAlignment="Left" Width="75" Click="Button1_Click" Content="Add"/>
+                            <Button x:Name="Button2Btn" Height="23" HorizontalAlignment="Left" Margin="20,0" Width="75" Click="Button2_Click" Content="Clear"/>
                         </StackPanel>
                         <Grid Margin="20,0">
-                            <WrapPanel x:Name="RoomsBox"></WrapPanel>
+                            <WrapPanel x:Name="RoomsBox"/>
                         </Grid>
                     </StackPanel>
                 </Grid>
@@ -27,7 +28,7 @@
 
             <TabItem x:Name="NewReservationTab" Header="预订" Width="130">
                 <Grid x:Name="CustomerTab" Background="#FFE5E5E5">
-                    <TabControl x:Name="BookingTab" MinHeight="370" MinWidth="750">
+                    <TabControl x:Name="BookingTab" SelectionChanged="refreshTabsStatus" MinHeight="370" MinWidth="750">
                         <TabItem x:Name="AvailabilityTab" Header="查询可用房间" VerticalAlignment="Bottom" Width="100" Height="25">
                             <Grid Background="#FFE5E5E5">
                                 <DockPanel Margin="0,0,0,37" LastChildFill="True">
@@ -45,25 +46,27 @@
                                             <ComboBox x:Name="RoomTypeCombo" Width="115"/>
                                         </StackPanel>
                                         <Button x:Name="AvailabilityCheckBtn" Content="查找空闲房间" Width="185" Click="CheckAvailabilityBtn_Click" Height="27" Background="{x:Null}"/>
-                                        <GroupBox x:Name="AddAvailableRoom" Header="已选房间" Margin="0,10,5,0">
-                                            <StackPanel Height="105"></StackPanel>
+                                        <GroupBox Header="已选房间" Margin="0,10,5,0">
+                                            <StackPanel x:Name="AddAvailableRoom" Orientation="Vertical" MinHeight="105"/>
                                         </GroupBox>
                                     </StackPanel>
                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,10">
-                                        <DataGrid x:Name="RoomsDataGrid" SelectionChanged="RoomsListView_SelectionChanged" IsReadOnly="True" AutoGenerateColumns="False">
+                                        <DataGrid x:Name="RoomsDataGrid" SelectionChanged="RoomsListView_SelectionChanged" TargetUpdated="AddRoomBox"  AutoGenerateColumns="False" FontSize="14">
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn Header="预订" Width="40" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="房间类型" Width="80" Binding="{Binding RType}"/>
-                                                <DataGridTextColumn Header="价格" Width="60" Binding="{Binding Price}"/>
-                                                <DataGridTextColumn Header="状态" Width="75" Binding="{Binding RStatus}"/>
+                                                <DataGridCheckBoxColumn Header="预订" Width="50" IsReadOnly="False" Binding="{Binding Chosen, NotifyOnTargetUpdated=True}"/>
+                                                <DataGridTextColumn Header="房间类型" Width="100" IsReadOnly="True" Binding="{Binding RType}"/>
+                                                <DataGridTextColumn Header="价格" Width="70" IsReadOnly="True" Binding="{Binding Price}"/>
+                                                <DataGridTextColumn Header="剩余" Width="70" IsReadOnly="True" Binding="{Binding Remain}"/>
+                                                <DataGridTextColumn Header="预订数量" Width="70" Binding="{Binding ChosenNum}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
                                 </DockPanel>
                                 <Button x:Name="AvailabilityNextBtn" Content="下一步" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height ="29" Width="100" Margin="0,0,10,10" Click="GoToCustomerDetailsBtn_Click"/>
+                                <Button Content="清除" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height ="29" Width="60" Margin="0,0,130,10" Click="AvailabilityClear" Background="{x:Null}"/>
                             </Grid>
                         </TabItem>
-                        <TabItem x:Name="ContractsDetailsTab" Header="联系人信息" Width="100">
+                        <TabItem x:Name="ContractsDetailsTab" Header="联系人信息" Width="100" IsEnabled="False">
                             <Grid Background="#FFE5E5E5">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="600" Height="300">
                                     <StackPanel Orientation="Vertical" MinWidth="380">
@@ -93,7 +96,7 @@
                                 <Button x:Name="NextReservationButton" Content="确认" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="29" Width="100" Margin="0,0,10,10" Click="GoToReceiptBtn_Click"/>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="生成订单" Width="100">
+                        <TabItem x:Name="RecieptTab" Header="生成订单" Width="100" IsEnabled="False">
                             <Grid Background="#FFE5E5E5">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="700" Height="300">
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" MinWidth="300" Margin="0,0,10,0">
@@ -111,8 +114,8 @@
                                             <TextBox x:Name="RecieptPhoneCountryCodeTbx" Height="23" Margin="0,8,5,0" TextWrapping="Wrap" Width="30" IsEnabled="False"/>
                                             <TextBox x:Name="RecieptPhoneNoTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="203" IsEnabled="False"/>
                                         </StackPanel>
-                                        <GroupBox x:Name="RecieptRooms" Header="预订房间" Margin="10,10,5,0">
-                                            <StackPanel Height="105"></StackPanel>
+                                        <GroupBox Header="预订房间" Margin="10,10,5,0">
+                                            <StackPanel x:Name="RecieptRooms" Orientation="Vertical" Height="105"/>
                                         </GroupBox>
                                     </StackPanel>
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" MinWidth="300">
@@ -130,7 +133,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,30,0,0">
                                             <Label x:Name="latestArrivalTimeLbl" Content="最晚到店时间：" Margin="0,0,5,0" Width="95"/>
-                                            <ComboBox x:Name="ArrivalTimeHourCombo" Width="100"/>
+                                            <xctk:TimePicker x:Name="ArrivalTimeHourCombo" Width="100" Height="23" Background="White"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Label x:Name="downPaymentLbl" Content="已收订金：" Margin="25,8,5,0" Width="70"/>
@@ -139,6 +142,7 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <Button x:Name="RecieptConfirmBtn" Content="确认" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="29" Width="100" Margin="0,0,10,10" Click="RecieptConfirmBtn_Click"/>
+                                <Button Content="清除" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height ="29" Width="60" Margin="0,0,130,10" Click="RecieptClear" Background="{x:Null}"/>
                             </Grid>
                         </TabItem>
                     </TabControl>
@@ -155,10 +159,12 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
                             <TextBox x:Name="CheckInCheckOutSearchTbx" Height="23" Margin="10,20,10,0" TextWrapping="Wrap" Width="133"/>
-                            <Button x:Name="CheckInCheckOutSearchByNameBtn" Content="搜索姓名" Margin="0,20,10,0" Click="SearchByNameBtn_Click" Width="110" Height="23" Background="{x:Null}"/>
-                            <Button x:Name="CheckInCheckOutSearchByResNoBtn" Content="搜索订单号" Margin="0,20,0,0" Click="SearchByResNoBtn_Click" Width="110" Height="23" Background="{x:Null}"/>
+                            <Button x:Name="CheckInCheckOutSearchByNameBtn" Content="搜索姓名" Margin="0,20,10,0" Click="SearchByNameBtn_Click" Width="110" Background="{x:Null}"/>
+                            <Button x:Name="CheckInCheckOutSearchByResNoBtn" Content="搜索订单号" Margin="0,20,10,0" Click="SearchByResNoBtn_Click" Width="110" Background="{x:Null}"/>
+                            <Button x:Name="CheckInCheckOutSearchByRoomBtn" Content="搜索房间号" Margin="20,20,10,0" Click="SearchByRoomBtn_Click" Width="110" Background="{x:Null}"/>
+                            <Button x:Name="CheckInCheckOutAllBtn" Content="所有订单" Margin="0,20,10,0" Click="AllBtn_Click" Width="110" Background="Snow"/>
                         </StackPanel>
-                        <DataGrid x:Name="CheckInCheckOutDataGrid" IsReadOnly="True"/>
+                        <DataGrid x:Name="CheckInCheckOutDataGrid" IsReadOnly="True" FrozenColumnCount="1"/>
                     </DockPanel>
                 </Grid>
             </TabItem>
@@ -170,16 +176,17 @@
                             <Grid Background="#FFE5E5E5">
                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*"></ColumnDefinition>
-                                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="2*"/>
                                     </Grid.ColumnDefinitions>
-                                    <DataGrid Grid.Column="0" Margin="5"></DataGrid>
+                                    <DataGrid x:Name="ManageRoomDataGrid" SelectionChanged="ManageRoomDataGrid_SelectionChanged" Grid.Column="0" Margin="5"/>
                                     <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10">
-                                        <GroupBox Header="房间信息">
+                                        <Button Content="加载房间" Click="UpdateManageRoomDataGrid" Margin="40,0,40,10" Height="23" Background="{x:Null}"/>
+                                        <GroupBox x:Name="ManageRoomGroup" Header="房间信息">
                                             <StackPanel Orientation="Vertical" Margin="10">
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
-                                                    <RadioButton Margin="50,0" IsChecked="True" Click="ManageRoomAdd_Click">增加</RadioButton>
-                                                    <RadioButton Margin="0,0" Click="ManageRoomChange_Click">修改</RadioButton>
+                                                    <RadioButton x:Name="ManageRoomAddRadio" Margin="50,0" IsChecked="True" Click="ManageRoomAddRadio_Click" Content="增加"/>
+                                                    <RadioButton x:Name="ManageRoomChangeRadio" Margin="0,0" Click="ManageRoomChangeRadio_Click" Content="修改"/>
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Margin="0,3">
                                                     <Label Content="房间ID：" Margin="12,0,0,0"/>
@@ -188,12 +195,12 @@
                                                 <StackPanel Orientation="Horizontal" Margin="0,3">
                                                     <Label Content="房间号：" Margin="12,0,0,0"/>
                                                     <TextBox x:Name="ManageRoomNum" Width="100" Height="23"/>
-                                                    <Button x:Name="ManageRoomDelete" Content="删除" Width="40" Margin="30,0,0,0" IsEnabled="False" Background="{x:Null}"/>
+                                                    <Button x:Name="ManageRoomDelete" Content="删除" Click="ManageRoomDel_Click" Width="40" Margin="30,0,0,0" IsEnabled="False" Background="{x:Null}"/>
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Margin="0,3">
                                                     <Label Content="房间类型："/>
                                                     <ComboBox x:Name="ManageRoomTypeCombo" Width="100"/>
-                                                    <Button x:Name="ManageRoomSave" Content="保存" Width="40" Margin="30,0,0,0" Background="{x:Null}"/>
+                                                    <Button x:Name="ManageRoomSave" Content="保存" Click="ManageRoomSave_Click" Width="40" Margin="30,0,0,0" Background="{x:Null}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
@@ -201,12 +208,12 @@
                                             <StackPanel Orientation="Vertical" Margin="10">
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
                                                     <Label Content="房间类型："/>
-                                                    <ComboBox x:Name="ManageRoomPriceCombo" Width="100"/>
+                                                    <ComboBox x:Name="ManageRoomPriceCombo" SelectionChanged="ManageRoomPriceCombo_Changed" Width="100"/>
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Margin="0,3">
                                                     <Label Content="价格：" Margin="24,0,0,0"/>
                                                     <TextBox x:Name="ManageRoomPriceTbx" Width="100" Height="23"/>
-                                                    <Button x:Name="ManageRoomPriceSave" Content="保存" Width="40" Margin="30,0,0,0" Background="{x:Null}"/>
+                                                    <Button x:Name="ManageRoomPriceSave" Content="保存" Click="ManageRoomPriceSave_Click" Width="40" Margin="30,0,0,0" Background="{x:Null}"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </GroupBox>
@@ -215,14 +222,10 @@
                             </Grid>
                         </TabItem>
                         <TabItem x:Name="CustomerRegistryTab" Header="查询旅客" VerticalAlignment="Bottom" Width="100" Height="25">
-                            <Grid Background="#FFE5E5E5">
-                                
-                            </Grid>
+                            <Grid Background="#FFE5E5E5"/>
                         </TabItem>
                         <TabItem x:Name="ReservationRegistryTab" Header="查询订单" VerticalAlignment="Bottom" Width="100" Height="25">
-                            <Grid Background="#FFE5E5E5">
-                                
-                            </Grid>
+                            <Grid Background="#FFE5E5E5"/>
                         </TabItem>
                     </TabControl>
                 </Grid>

@@ -51,8 +51,8 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="addressLbl" Content="地址：" Margin="24,0,5,0"/>
-                            <Label x:Name="address" MaxWidth="175">
-                                <TextBlock TextWrapping="Wrap" Text="北京市海淀区北太平庄街道西土城路10号"/>
+                            <Label MaxWidth="175">
+                                <TextBlock x:Name="address" TextWrapping="Wrap" Text="北京市海淀区北太平庄街道西土城路10号"/>
                             </Label>
                         </StackPanel>
                     </StackPanel>

@@ -74,7 +74,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="CustomerAgeLbl" Content="年龄：" Margin="24,8,5,0"/>
-                            <ComboBox x:Name="CustomerAgeCbx" Height="23" Width="100" Margin="0,8,0,0"/>
+                            <TextBox x:Name="CustomerAgeTbx" Height="23" Width="100" Margin="0,8,0,0"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="CreditCardNoLbl" Content="身份证：" Margin="12,8,5,0"/>
