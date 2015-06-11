@@ -18,9 +18,10 @@ namespace ControllerLayer
         }
         
         #region Customer 
-        internal ICustomer CreateCustomer(string id, string name, CustomerGender gender, int age, string phone, string fax, string idcard,string roomid, string company, string address)
+        internal ICustomer CreateCustomer(string name, CustomerGender gender, int age, string phone, string fax, string idcard,string roomid, string company, string address)
         {
-            return dbCon.CreateCustomer(id,name, gender, age,phone, fax, idcard, roomid, company, address);
+            var customer = new Customer();
+            return dbCon.CreateCustomer(customer.ID, name, gender, age,phone, fax, idcard, roomid, company, address);
         }
         internal ICustomer GetCustomer(string customerID)
         {
@@ -71,19 +72,48 @@ namespace ControllerLayer
         #endregion 
 
         #region Booking
+
+        internal List<IBooking> CreateBookings(List<IAvaliableRoom> selectedRoomList, DateTime start, DateTime end, string reservetime, string contractid, string reservationid)
+        {
+            List<IBooking> bookinglist = new List<IBooking>();
+            foreach (IAvaliableRoom room in selectedRoomList)
+            {
+                IRoomPrice roomprice = dbCon.GetRoomPrice(room.RType);
+                for (int i = 1; i <= room.ChosenNum; i++)
+                {
+                    var booking = new Booking();
+                    dbCon.UpdateClock();
+                    bookinglist.Add(dbCon.CreateBooking(booking.ID, start, end, reservetime, contractid, room.RType, roomprice.Price, reservationid));
+                }
+            }
+            return bookinglist;
+        }
         internal IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
         {
             IRoomPrice roomprice = dbCon.GetRoomPrice(roomtype);
-            return dbCon.CreateBooking(IClock.GetBookingID, start, end, reservetime, contractid, roomtype, roomprice.Price , reservationid);
+            var booking = new Booking();
+            dbCon.UpdateClock();
+            return dbCon.CreateBooking(booking.ID, start, end, reservetime, contractid, roomtype, roomprice.Price , reservationid);
         }
         
         internal List<IBooking> GetActiveBookings(string reservationID)
         {
             List<IBooking> bookings = new List<IBooking>();
 
-            foreach (IBooking book in dbCon.GetBookings(reservationID))//与数据库的这个函数含义不同
+            foreach (IBooking book in dbCon.GetBookings(reservationID))
             {
-                if (book.BStatus == BookStatus.Confirmed)
+                if (book.BStatus != BookStatus.Canceled)
+                    bookings.Add(book);
+            }
+            return bookings;
+        }
+        internal List<IBooking> GetActiveBookings()
+        {
+            List<IBooking> bookings = new List<IBooking>();
+
+            foreach (IBooking book in dbCon.GetBookings())
+            {
+                if (book.BStatus != BookStatus.Canceled)
                     bookings.Add(book);
             }
             return bookings;
@@ -156,22 +186,16 @@ namespace ControllerLayer
         /// </summary>
         /// <param name="books"></param>
         /// <returns>新建的reservation单</returns>
-        internal IReservation CreateReservation(List<IBooking> books)
+        internal IReservation CreateReservation()
         {
             IReservation reservation = new Reservation();
-            string reservationID=reservation.ID;
-            double payment = 0;
-            double downpayment = 0;
-            //将生成的reservationID赋给属于它的每一个booking
-            foreach (IBooking book in books)
-            {
-                book.ReservationID = reservationID;
-                IRoomPrice roomprice=dbCon.GetRoomPrice(book.Roomtype);
-                payment += roomprice.Price;
-                downpayment = reservation.DownPayment;
-                dbCon.UpdateBooking(book);
-            }
-            return dbCon.CreateReservation(reservationID, payment, downpayment, ReservationStatus.Booked);//定金一个固定值
+            dbCon.UpdateClock();
+            return dbCon.CreateReservation(reservation.ID, 0, 0, ReservationStatus.Canceled);
+        }
+
+        internal IReservation UpdateReservation(IReservation reserv)
+        {
+            return dbCon.UpdateReservation(reserv);
         }
 
         internal IReservation GetReservation(string reservationID)

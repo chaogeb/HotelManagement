@@ -21,7 +21,9 @@ namespace ControllerLayer
         // Adds a room to the database.
         internal IRoom CreateRoom(string roomNum, RoomType rType)
         {
-            return dbCon.CreateRoom(IClock.GetRoomID, roomNum, rType,RoomStatus.Idle);
+            var room = new Room();
+            dbCon.UpdateClock();
+            return dbCon.CreateRoom(room.ID, roomNum, rType, RoomStatus.Idle);
         }
 
         // Returns a IRoom from id.
@@ -30,10 +32,30 @@ namespace ControllerLayer
             return dbCon.GetRoom(id);
         }
 
-        /// Returns a list of all the rooms.
+        internal IRoom GetRoomViaNum(string roomNum)
+        {
+            var list = dbCon.GetRooms();
+            foreach (IRoom room in list)
+            {
+                if (room.RoomNum == roomNum && room.RStatus != RoomStatus.NA)
+                    return room;
+            }
+            return null;
+        }
+
+        /// Returns a list of all the rooms (except NA).
         internal List<IRoom> GetRooms()
         {
-            return dbCon.GetRooms();
+            var allrooms = dbCon.GetRooms();
+            List<IRoom> temp = new List<IRoom>();
+            foreach (IRoom rooms in allrooms)
+            {
+                if (rooms.RStatus != RoomStatus.NA)
+                {
+                    temp.Add(rooms);
+                }
+            }
+            return temp;
         }
 
         /// Updates a room
@@ -52,48 +74,73 @@ namespace ControllerLayer
         }
 
 
-        //Return a list of available rooms
-        internal List<IRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate)
+        //Return a list of available room types
+        internal List<IAvaliableRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate)
         {
             List<IBooking> bookings = dbCon.GetBookings();
-            List<IRoom> rooms = GetRooms(), temp;
+            List<IRoom> rooms = GetRooms();
+
+            List<IAvaliableRoom> avaliablerooms = new List<IAvaliableRoom>(), temp;
+            foreach (IRoom room in rooms)
+            {
+                bool foundroom = false;
+                foreach (AvaliableRoom avaliroom in avaliablerooms)
+                {
+                    if (avaliroom.RType == room.RType)
+                    {
+                        foundroom = true;
+                        avaliroom.Add();
+                    }
+                }
+                if (foundroom == false)
+                {
+                    avaliablerooms.Add(new AvaliableRoom(room.RType, dbCon.GetRoomPrice(room.RType).Price));
+                }
+            }
 
             if (roomtype != null)
             {
-                temp = new List<IRoom>();
-                foreach (IRoom room in rooms)
+                temp = new List<IAvaliableRoom>();
+                foreach (IAvaliableRoom avaliroom in avaliablerooms)
                 {
-                    if (room.RType == roomtype)
-                        temp.Add(room);
-                }
-                rooms = temp;
-            }
-            if (startdate != null && enddate != null)
-            {
-                bool bookingForRoom;
-                temp = new List<IRoom>();
-                foreach (IRoom room in rooms)
-                {
-                    bookingForRoom = false;
-                    foreach (IBooking booking in bookings)
+                    if (avaliroom.RType == roomtype)
                     {
-                        if (room.ID == booking.RoomID)
-                        {
-                            bookingForRoom = true;
-                            // If the selected startdate is before or the same day as the booking enddate
-                            // AND the selected enddate is after the booking startdate.
-                            bool overlap = startdate < booking.EndDate && enddate > booking.StartDate;
-                            if (!overlap)
-                                temp.Add(room);
-                        }
+                        temp.Add(avaliroom);
                     }
-                    if (!bookingForRoom)
-                        temp.Add(room);
                 }
-                rooms = temp;
+                avaliablerooms = temp;
             }
 
-            return rooms;
+            if (startdate != null && enddate != null)
+            {
+                foreach (AvaliableRoom avaliroom in avaliablerooms)
+                {
+                    foreach (IBooking booking in bookings)
+                    {
+                        if (booking.Roomtype == avaliroom.RType)
+                        {
+                            bool overlap = startdate < booking.EndDate && enddate > booking.StartDate;
+                            if (overlap)
+                                avaliroom.Reduce();
+                        }
+                    }
+                }
+            }
+            
+            return avaliablerooms;
+        }
+
+        internal IRoomPrice UpdateRoomPrice(RoomType rType, double price)
+        {
+            if (dbCon.GetRoomPrice(rType) != null)
+                return dbCon.UpdateRoomPrice(new RoomPrice(rType, price));
+            else
+                return dbCon.CreateRoomPrice(rType, price);
+        }
+
+        internal IRoomPrice GetRoomPrice(RoomType rType)
+        {
+            return dbCon.GetRoomPrice(rType);
         }
     }
 }
