@@ -20,7 +20,7 @@ namespace Model
         public string ReservationID        { get; set; }            //结账单号
         public BookStatus BStatus          { get; set; }            //订单状态
         public Booking(string id, DateTime start, DateTime end, string reserveTime,
-                       string contractID, RoomType roomType, double price, string roomId,string reservationID)
+                       string contractID, RoomType roomType, double price, string roomId,string reservationID, BookStatus bookingStatus)
         {
             ID = id;
             StartDate = start;
@@ -31,7 +31,7 @@ namespace Model
             ThisPrice = price;
             RoomID = roomId;
             ReservationID = reservationID;
-            BStatus = BookStatus.Confirmed;
+            BStatus = bookingStatus;
         }
 
         public Booking()

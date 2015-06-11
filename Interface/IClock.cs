@@ -55,7 +55,7 @@ namespace Interface
         {
             get
             {
-                string id = Time.ToLongDateString() + CountReserv;
+                string id = string.Format("{0:yyyyMMdd}", Time) + CountReserv;
                 CountReserv++;
                 return id;
             }
@@ -64,7 +64,7 @@ namespace Interface
         {
             get
             {
-                string id = Time.ToLongDateString() + CountBooking;
+                string id = string.Format("{0:yyyyMMdd}", Time) + CountBooking;
                 CountBooking++;
                 return id;
             }
@@ -73,7 +73,7 @@ namespace Interface
         {
             get
             {
-                string id = Time.ToLongDateString() + CountCustomer;
+                string id = string.Format("{0:yyyyMMdd}", Time) + CountCustomer;
                 CountCustomer++;
                 return id;
             }
@@ -82,7 +82,7 @@ namespace Interface
         {
             get
             {
-                string id = Time.ToLongDateString() + CountRoom;
+                string id = string.Format("{0:yyyyMMdd}", Time) + CountRoom;
                 CountRoom++;
                 return id;
             }
