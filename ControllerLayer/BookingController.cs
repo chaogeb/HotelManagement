@@ -11,10 +11,12 @@ namespace ControllerLayer
     {
         private SQLiteController dbCon;
         private HotelController hCon;
-        internal BookingController(SQLiteController db,HotelController h)
+        private LogController LCon;
+        internal BookingController(SQLiteController db,HotelController h, LogController l)
         {
             dbCon = db;
             hCon = h;
+            LCon = l;
         }
         
         #region Customer 
@@ -86,6 +88,7 @@ namespace ControllerLayer
                     bookinglist.Add(dbCon.CreateBooking(booking.ID, start, end, reservetime, contractid, room.RType, roomprice.Price, reservationid));
                 }
             }
+            LCon.Log_Booked(dbCon.GetCustomer(contractid), bookinglist);
             return bookinglist;
         }
         internal IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
@@ -158,8 +161,7 @@ namespace ControllerLayer
             //如果reservation中只有一个booking，当booking取消时，reservation也取消
             string reservationID = book.ReservationID;
             List<IBooking> books = dbCon.GetBookings(reservationID);
-            int count=books.Count();
-            if (count == 1)
+            if (books.Count() == 1)
                 CancelReservation(reservationID);
         }
 

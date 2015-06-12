@@ -36,7 +36,7 @@ namespace HotelManagementSystem
             {
                 InitializeComponent();
                 CenterWindowOnScreen();
-                MainTab.SelectedIndex = 1;
+                MainTab.SelectedIndex = 0;
                 facade = FacadeController.GetInstance();
             }
             catch (Exception ex)
@@ -81,6 +81,8 @@ namespace HotelManagementSystem
                 TimeProgressBar.Value = 0;
                 IClock.RunClock();
                 facade.SetClock();
+                facade.TimeLine();
+                LoadFloor(0);
             }
             TimeBlock.Text = IClock.GetTime;
         }
@@ -94,6 +96,91 @@ namespace HotelManagementSystem
 
         #region Main Hall
         // HallTab
+        Dictionary<int, int> FloorList;
+        private static int SortRooms(IRoom rm1, IRoom rm2)
+        {
+            return string.CompareOrdinal(rm1.RoomNum, rm2.RoomNum);
+        }
+        List<List<IRoom>> RoomsInAllFloorList = new List<List<IRoom>>();
+        private void InitializeMainHall(object sender, EventArgs e)
+        {
+            InitializeMainHall();
+        }
+        private void InitializeMainHall()
+        {
+            List<IRoom> rooms = facade.GetRooms();
+            FloorList = new Dictionary<int, int>();
+            RoomsInAllFloorList = new List<List<IRoom>>();
+            foreach (IRoom rm in rooms)
+            {
+                while (rm.RoomNum[0]-'0' > RoomsInAllFloorList.Count)
+                    RoomsInAllFloorList.Add(new List<IRoom>());
+                RoomsInAllFloorList[rm.RoomNum[0]-'1'].Add(rm);
+            }
+            int count = 0;
+            foreach (List<IRoom> rmlst in RoomsInAllFloorList)
+            {
+                rmlst.Sort(SortRooms);
+                FloorList.Add(count, ++count);
+            }
+            SelectFloorCbx.ItemsSource = FloorList;
+            SelectFloorCbx.SelectedValuePath = "Key";
+            SelectFloorCbx.DisplayMemberPath = "Value";
+            SelectFloorCbx.SelectedIndex = 0;
+        }
+        private void LoadFloor(object sender, RoutedEventArgs e)
+        {
+            LoadFloor(SelectFloorCbx.SelectedIndex);
+        }
+        private void LoadFloor(object sender, SelectionChangedEventArgs e)
+        {
+            LoadFloor(SelectFloorCbx.SelectedIndex);
+        }
+        private void LoadFloor(int floor)
+        {
+            FloorLbl.Content = (SelectFloorCbx.SelectedIndex + 1) + " 楼";
+            RoomsBox.Children.Clear();
+            RoomsBox.RowDefinitions.Clear();
+            RoomsBox.ColumnDefinitions.Clear();
+            if (floor == -1) return;
+            int rows = (int)Math.Sqrt(RoomsInAllFloorList[floor].Count);
+            for (int i = 0; i < rows; i++)
+            {
+                RoomsBox.RowDefinitions.Add(new RowDefinition());
+            }
+            int row = 0, column = 0;
+            foreach (IRoom rm in RoomsInAllFloorList[floor])
+            {
+                var btn = new Button();
+                btn.Content = rm.RoomNum + "\n" + rm.RType.ToString();
+                btn.FontSize = 25;
+                btn.FontStretch = FontStretches.Condensed;
+                btn.Margin = new Thickness(5);
+                btn.SetValue(Grid.RowProperty, row);
+                btn.SetValue(Grid.ColumnProperty, column);
+                //btn.Click += (RoutedEventHandler)MessageBox.Show("");
+                btn.Background = null;
+                if (rm.RStatus == RoomStatus.Occupied)
+                {
+                    btn.Background = new SolidColorBrush(Color.FromRgb(200, 200, 200));
+                }
+                row++;
+                if (row >= rows)
+                {
+                    row = 0;
+                    column++;
+                    RoomsBox.ColumnDefinitions.Add(new ColumnDefinition());
+                }
+                RoomsBox.Children.Add(btn);
+            }
+
+        }
+
+        private void Btn_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
             Button bt = new Button()
@@ -188,7 +275,7 @@ namespace HotelManagementSystem
             if (RoomsDataGrid.SelectedIndex != -1)
             {
                 var room = RoomsDataGrid.SelectedItem as IAvaliableRoom;
-                if (room.ChosenNum > 0)
+                if (room.ChosenNum > 0 && room.ChosenNum <= room.Remain)
                 {
                     selectedRoomList.Add(room);
                     Label Lbl = new Label();
@@ -198,6 +285,8 @@ namespace HotelManagementSystem
                     Lbl2.Content = room.ChosenNum + " × " + room.RType.ToString();
                     AddAvailableRoom.Children.Add(Lbl2);
                 }
+                else
+                    MessageBox.Show("选中房间数值非法！","无法添加房间");
             }
         }
 
@@ -234,7 +323,7 @@ namespace HotelManagementSystem
             {
                 MessageBox.Show("请填写联系人姓名");
             }
-            else if (RecieptPhoneNoTbx.Text == "")
+            else if (ContractsDetailsPhoneNoTbx.Text == "")
             {
                 MessageBox.Show("请填写联系电话");
             }
@@ -277,6 +366,8 @@ namespace HotelManagementSystem
                     var customer = facade.GetCustomerViaPhone(ContractsDetailsPhoneNoTbx.Text);
                     ContractsDetailsNameTbx.Text = customer.Name;
                     ContractsDetailsCreditCardNoTbx.Text = customer.IDcard;
+                    ContractsDetailsConpanyTbx.Text = customer.Company;
+                    ContractsDetailsAddrTbx.Text = customer.Address;
                 }
                 catch (Exception)
                 {
@@ -305,6 +396,8 @@ namespace HotelManagementSystem
             ContractsDetailsCreditCardNoTbx.Text = "";
             ContractsDetailsPhoneCountryCodeTbx.Text = "";
             ContractsDetailsPhoneNoTbx.Text = "";
+            ContractsDetailsConpanyTbx.Text = "";
+            ContractsDetailsAddrTbx.Text = "";
         }
 
         private void CheckBoxRegister_Unchecked(object sender, RoutedEventArgs e)
@@ -318,6 +411,8 @@ namespace HotelManagementSystem
             ContractsDetailsNameTbx.IsEnabled = enabled;
             ContractsDetailsCreditCardNoTbx.IsEnabled = enabled;
             ContractsDetailsPhoneCountryCodeTbx.IsEnabled = enabled;
+            ContractsDetailsConpanyTbx.IsEnabled = enabled;
+            ContractsDetailsAddrTbx.IsEnabled = enabled;
         }
         #endregion
 
@@ -339,6 +434,7 @@ namespace HotelManagementSystem
                 customer.ID, reservation.ID
                 );
             facade.ComfirmReservation(reservation, double.Parse(RecieptDownPaymentTbx.Text));
+            MessageBox.Show("预订成功！");
             ClearReservationTab(sender, e);
         }
 
@@ -473,10 +569,55 @@ namespace HotelManagementSystem
                 CheckOutWindow checkoutWin = new CheckOutWindow((CheckInCheckOutDataGrid.SelectedItem as IBooking).ID);
                 checkoutWin.ShowDialog();
             }
-                
         }
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
-        { }
+        {
+            if (CheckInCheckOutDataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("请选择一个订单！");
+                return;
+            }
+            else if (searchbyRooms)
+            {
+                IRoom rm = CheckInCheckOutDataGrid.SelectedItem as IRoom;
+                IBooking bk = null;
+                var book = facade.GetActiveBookings(null);
+                foreach (IBooking bktemp in book)
+                {
+                    if (bktemp.RoomID == rm.ID)
+                    {
+                        bk = bktemp;
+                        break;
+                    }
+                }
+                try
+                {
+                    if(bk != null)
+                    {
+                        facade.CancelBooking(bk.ID);
+                        MessageBox.Show("订单已取消");
+                        facade.Log_Cancel(bk);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("取消 Room 订单错误\n" + ex);
+                }
+            }
+            else if (!searchbyRooms)
+            {
+                IBooking bk = CheckInCheckOutDataGrid.SelectedItem as IBooking;
+                try
+                {
+                    facade.CancelBooking(bk.ID);
+                    MessageBox.Show("订单已取消");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("取消 Booking 订单错误\n" + ex);
+                }
+            }
+        }
         #endregion
 
         #region Manage Tab
@@ -533,6 +674,7 @@ namespace HotelManagementSystem
                 if (ManageRoomNum.Text == "" || ManageRoomTypeCombo.SelectedIndex == -1)
                     return;
                 IRoom room = facade.GetRoom(ManageRoomID.Content.ToString());
+                if (room == null) return;
                 room.RStatus = RoomStatus.NA;
                 facade.UpdateRoom(room);
             }
@@ -550,18 +692,22 @@ namespace HotelManagementSystem
             try
             {
                 if (ManageRoomNum.Text == "" || ManageRoomTypeCombo.SelectedIndex == -1)
+                {
+                    MessageBox.Show("请选择一个房间或检查信息是否完整");
                     return;
+                }
                 if (ManageRoomAddRadio.IsChecked == true)
                 {
                     facade.CreateRoom(ManageRoomNum.Text, (RoomType)ManageRoomTypeCombo.SelectedItem);
                 }
-                else if (ManageRoomChangeRadio.IsChecked == true)
+                else if (ManageRoomChangeRadio.IsChecked == true && ManageRoomDataGrid.SelectedIndex != -1)
                 {
                     IRoom room = facade.GetRoom(ManageRoomID.Content.ToString());
                     room.RoomNum = ManageRoomNum.Text;
                     room.RType = (RoomType)ManageRoomTypeCombo.SelectedIndex;
                     facade.UpdateRoom(room);
                 }
+                else MessageBox.Show("请选择一个房间或检查信息是否完整");
             }
             catch (Exception ex)
             {
@@ -589,7 +735,50 @@ namespace HotelManagementSystem
             ManageRoomPriceTbx.Text = roomprice.Price.ToString();
         }
 
+        private void LogLoaded(object sender, RoutedEventArgs e)
+        {
+            LogDataGrid.ItemsSource = facade.GetLogs();
+        }
+        private void LogSearch_Click(object sender, RoutedEventArgs e)
+        {
+            LogDataGrid.ItemsSource = facade.GetLogs(LogStartDay.SelectedDate, LogEndDay.SelectedDate);
+        }
         #endregion
+
+        private void LogBackup_Click(object sender, RoutedEventArgs e)
+        {
+            string sourcePath = Environment.CurrentDirectory + "\\HotelDataBase.db";
+            string bkFileName = "\\" + string.Format("{0:yyyyMMddHHmm}_", IClock.Time) + "HotelDataBase.db.bak";
+            string destPath = Environment.CurrentDirectory + bkFileName;
+            System.IO.File.Copy(sourcePath, destPath, true);
+            MessageBox.Show("文件：" + destPath, "备份成功");
+        }
+
+        private void LogLoadBackup_Click(object sender, RoutedEventArgs e)
+        {
+            string sourcePath = selectFile();
+            if (sourcePath != null)
+            {
+                string destPath = Environment.CurrentDirectory + "\\HotelDataBase.db";
+                System.IO.File.Copy(sourcePath, destPath, true);
+                MessageBox.Show("文件：" + sourcePath, "加载备份成功");
+            }
+        }
+
+        private string selectFile()
+        {
+            string file = null;
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            fileDialog.Multiselect = true;
+            fileDialog.Title = "请选择备份文件";
+            fileDialog.InitialDirectory = Environment.CurrentDirectory;
+            fileDialog.Filter = "备份文件(*.bak)|*.bak";
+            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                file = fileDialog.FileName;
+            }
+            return file;
+        }
 
     }
 }

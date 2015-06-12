@@ -74,15 +74,19 @@ namespace HotelManagementSystem
         private void CheckInConfirmBtn_Click(object sender, RoutedEventArgs e)
         {
             SaveCustomerDetails();
+            List<ICustomer> cusl = new List<ICustomer>();
             foreach (ICustomer cus in customerlist)
             {
                 cus.RoomID = roomNum.SelectedValue.ToString();
                 facade.UpdateCustomer(cus);
+                cusl.Add(cus);
             }
             IRoom room = facade.GetRoom(roomNum.SelectedValue.ToString());
             room.RStatus = RoomStatus.Occupied;
             facade.UpdateRoom(room);
             booking.RoomID = room.ID;
+            facade.UpdateBooking(booking);
+            facade.Log_CheckIn(cusl, booking);
             this.Close();
         }
 

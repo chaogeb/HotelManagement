@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using Interface;
 
 namespace ControllerLayer
@@ -9,6 +10,7 @@ namespace ControllerLayer
         private SQLiteController dbCon;
         private HotelController hotelCon;
         private BookingController customerCon;
+        private LogController logCon;
 
         private static FacadeController instance;
 
@@ -17,7 +19,8 @@ namespace ControllerLayer
         {
             dbCon = new SQLiteController();
             hotelCon = new HotelController(dbCon);
-            customerCon = new BookingController(dbCon, hotelCon);
+            logCon = new LogController(dbCon);
+            customerCon = new BookingController(dbCon, hotelCon, logCon);
         }
 
         //public static FacadeController GetInstance(string user, string pass)
@@ -31,9 +34,38 @@ namespace ControllerLayer
             return instance;
         }
         
-        public bool Authenticated()
+        public void TimeLine()
         {
-            return dbCon.Authenticated();
+            List<IBooking> booking = customerCon.GetActiveBookings();
+            foreach (IBooking bk in booking)
+            {
+                if (bk.BStatus == BookStatus.Confirmed)
+                {
+                    if (bk.RoomID != "")
+                    {   // room id exists
+                        if (bk.EndDate.Date == IClock.Time.Date && IClock.Time.Hour >= 12)
+                        {
+                            MessageBox.Show("房间" + hotelCon.GetRoom(bk.RoomID).RoomNum
+                                + "旅客已超出离店时间", "离店提醒");
+                        }
+                    }
+                    else if (bk.StartDate.Date == IClock.Time.Date 
+                        && String.CompareOrdinal(string.Format("{0:HHmm}", IClock.Time), bk.ReserveTime) >= 0)
+                    {   // room id not exists && check in is today
+                        bk.BStatus = BookStatus.Timeout;
+                        var cus = customerCon.GetCustomer(bk.ContractID);
+                        MessageBox.Show("旅客" + cus.Name + "超过预订时间未入住\n电话：" + cus.Phone, "订单超时");
+                    }
+                }
+                else if (bk.BStatus == BookStatus.Timeout)
+                {
+                    if (bk.StartDate.Date < IClock.Time.Date)
+                    {
+                        var cus = customerCon.GetCustomer(bk.ContractID);
+                        MessageBox.Show("旅客" + cus.Name + "超过预订日期未入住\n电话：" + cus.Phone, "订单超时");
+                    }
+                }
+            }
         }
 
         #region Reservation Methods
@@ -72,6 +104,10 @@ namespace ControllerLayer
             SetClock();
             return booking;
         }
+        public IBooking UpdateBooking(IBooking book)
+        {
+            return dbCon.UpdateBooking(book);
+        }
         public IBooking GetBooking(string bookingID)
         {
             return dbCon.GetBooking(bookingID);
@@ -100,6 +136,10 @@ namespace ControllerLayer
                     temp.Add(booking);
             }
             return temp;
+        }
+        public void CancelBooking(string BookingID)
+        {
+            customerCon.CancelBooking(BookingID);
         }
         #endregion
 
@@ -159,7 +199,9 @@ namespace ControllerLayer
         public List<IRoom> GetRoomViaNum(string roomNum)
         {
             var list = new List<IRoom>();
-            list.Add(hotelCon.GetRoomViaNum(roomNum));
+            IRoom rm = hotelCon.GetRoomViaNum(roomNum);
+            if (rm != null)
+                list.Add(rm);
             return list;
         }
 
@@ -182,9 +224,29 @@ namespace ControllerLayer
         {
             return hotelCon.UpdateRoomPrice(roomtype, price);
         }
+        /// <summary>
+        /// 获取指定房间类型的价格
+        /// </summary>
+        /// <param name="roomtype"></param>
         public IRoomPrice GetRoomPrice(RoomType roomtype)
         {
             return hotelCon.GetRoomPrice(roomtype);
+        }
+        /// <summary>
+        /// 获取指定房间号的价格
+        /// </summary>
+        /// <param name="roomNum"></param>
+        public IRoomPrice GetRoomPrice(string roomNum)
+        {
+            return hotelCon.GetRoomPrice(roomNum);
+        }
+        public List<IRoom> RefreshRooms(List<IRoom> roomList)
+        {
+            return hotelCon.RefreshRooms(roomList);
+        }
+        public IRoom RefreshRoom(IRoom room)
+        {
+            return hotelCon.RefreshRoom(room);
         }
         #endregion
 
@@ -197,6 +259,56 @@ namespace ControllerLayer
         public void SetClock()
         {
             dbCon.UpdateClock();
+        }
+        #endregion
+
+        #region Log Method
+        public void Log_Booked(ICustomer customer, List<IBooking> bookings)
+        {
+            logCon.Log_Booked(customer, bookings);
+        }
+        public void Log_CheckIn(List<ICustomer> customers, IBooking booking)
+        {
+            logCon.Log_CheckIn(customers, booking);
+        }
+        public void Log_CheckOut(IBooking booking)
+        {
+            logCon.Log_CheckOut(booking);
+        }
+        public void Log_Cancel(IBooking booking)
+        {
+            logCon.Log_Cancel(booking);
+        }
+        public List<Log> GetLogs()
+        {
+            return logCon.GetLogs();
+        }
+        public List<Log> GetLogs(DateTime? start, DateTime? end)
+        {
+            var chosenlogs = new List<Log>();
+            var logs = logCon.GetLogs();
+            foreach (Log lg in logs)
+            {
+                if (start != null)
+                {
+                    if (end != null)
+                    { // start && end
+                        if (lg.Time >= start && lg.Time < ((DateTime)end).AddDays(1))
+                            chosenlogs.Add(lg);
+                    }
+                    else // start && !end
+                    if (lg.Time >= start)
+                        chosenlogs.Add(lg);
+                }
+                else if (end != null)
+                {   // !start && end
+                    if (lg.Time < ((DateTime)end).AddDays(1))
+                        chosenlogs.Add(lg);
+                }
+                else // !start && !end
+                    chosenlogs.Add(lg);
+            }
+            return chosenlogs;
         }
         #endregion
     }

@@ -142,6 +142,41 @@ namespace ControllerLayer
         {
             return dbCon.GetRoomPrice(rType);
         }
+
+        internal IRoomPrice GetRoomPrice(string roomNum)
+        {
+            var roomlist = dbCon.GetRooms();
+            foreach (IRoom rm in roomlist)
+            {
+                if (rm.RStatus != RoomStatus.NA && rm.RoomNum == roomNum)
+                {
+                    return dbCon.GetRoomPrice(rm.RType);
+                }
+            }
+            return null;
+        }
+
+        internal List<IRoom> RefreshRooms(List<IRoom> roomlist)
+        {
+            var temp = new List<IRoom>();
+            foreach (IRoom rm in roomlist)
+            {
+                //IRoom newroom = CreateRoom(rm.RoomNum, rm.RType);
+                //UpdateRoom(newroom);
+                //rm.RStatus = RoomStatus.NA;
+                //UpdateRoom(rm);
+                //temp.Add(newroom);
+                temp.Add(RefreshRoom(rm));
+            }
+            return temp;
+        }
+        internal IRoom RefreshRoom(IRoom room)
+        {
+            IRoom newroom = CreateRoom(room.RoomNum, room.RType);
+            room.RStatus = RoomStatus.NA;
+            UpdateRoom(room);
+            return UpdateRoom(newroom);
+        }
     }
 }
  

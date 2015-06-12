@@ -27,6 +27,9 @@ namespace HotelManagementSystem
         IRoom room;
         List<IBooking> bookinglist = new List<IBooking>();
         List<IRoom> roomlist = new List<IRoom>();
+        List<UIElement> cbxlist = new List<UIElement>();
+        double roomsprice;
+        double totalPrice;
 
         public CheckOutWindow(IRoom rm)
         {
@@ -66,8 +69,12 @@ namespace HotelManagementSystem
             address.Text = contract.Address;
 
             roomPrice.Content = booking.ThisPrice;
+            roomsprice = booking.ThisPrice;
             checkOutTime.Content = IClock.Time.GetDateTimeFormats('f')[0].ToString();
             downPayment.Content = reservation.DownPayment;
+
+            LoadRoomList();
+            CalculatePrice();
         }
 
         private void LoadRoomList()
@@ -75,22 +82,100 @@ namespace HotelManagementSystem
             bookinglist = facade.GetActiveBookings(reservation.ID);
             foreach (IBooking bk in bookinglist)
             {
-                roomlist.Add(facade.GetRoom(bk.RoomID));
+                if (bk.RoomID != "")
+                    roomlist.Add(facade.GetRoom(bk.RoomID));
             }
-            //checkOutRoomsList.Children.Add()
+            int i = 0;
+            try
+            {
+                foreach (IRoom rm in roomlist)
+                {
+                    UIElement cbx = NewCheckBox(++i, rm.RoomNum);
+                    cbxlist.Add(cbx);
+                    checkOutRoomsList.Children.Add(cbx);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
-        private static UIElement NewCheckBox(string name, string content)
+        private UIElement NewCheckBox(int name, string content)
         {
             var cbx = new CheckBox();
-            cbx.Name = name;
+            cbx.Name = "cbx" + name;
             cbx.Content = content;
+            if (content == room.RoomNum)
+                cbx.IsChecked = true;
             cbx.Margin = new Thickness(5, 0, 5, 0);
+            cbx.Click += new RoutedEventHandler(item_Click);
             return cbx;
+        }
+        private void item_Click(Object sender, RoutedEventArgs e)
+        {
+            roomsprice = 0;
+            foreach (CheckBox cbx in cbxlist)
+            {
+                if (cbx.IsChecked == true)
+                {
+                    foreach (IBooking bk in bookinglist)
+                    {
+                        if (bk.RoomID != "" && facade.GetRoom(bk.RoomID).RoomNum == cbx.Content.ToString())
+                        {
+                            roomsprice += bk.ThisPrice;
+                            break;
+                        }
+                    }
+                }
+            }
+            CalculatePrice();
         }
 
         private void CheckOutConfirmBtn_Click(object sender, RoutedEventArgs e)
         {
+            reservation.Payment += totalPrice;
+            reservation.RStatus = ReservationStatus.Paid;
+            List<IRoom> rmlst = new List<IRoom>();
+            try
+            {
+                foreach (CheckBox cbx in cbxlist)
+                {
+                    if (cbx.IsChecked == false)
+                        reservation.RStatus = ReservationStatus.Booked;
+                    else
+                    {   // cbx is Checked
+                        foreach (IRoom rm in roomlist)
+                        {
+                            if (rm.RoomNum == cbx.Content.ToString())
+                                rmlst.Add(rm);
+                        }
+                    }
+                }
+                facade.UpdateReservation(reservation);
+                facade.RefreshRooms(rmlst);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("参数错误！" + ex);
+            }
+            MessageBox.Show("离店成功！");
+            facade.Log_CheckOut(booking);
             this.Close();
+        }
+
+        private void CalculatePrice(object sender, TextChangedEventArgs e)
+        {
+            CalculatePrice();
+        }
+        private void CalculatePrice()
+        {
+            if (otherPayment.Text == "")
+                otherPayment.Text = "0";
+            totalPrice = roomsprice + double.Parse(otherPayment.Text.ToString());
+            double finalPay = totalPrice - reservation.DownPayment;
+            totalPayment.Content = totalPrice;
+            finalPayment.Content = finalPay;
         }
     }
 }

@@ -14,15 +14,19 @@
 
             <TabItem x:Name="HallTab" Header="大厅" VerticalAlignment="Bottom" Width="130" Height="29">
                 <Grid Background="#FFE5E5E5">
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="20,12">
-                            <Button x:Name="Button1Btn" Height="23" HorizontalAlignment="Left" Width="75" Click="Button1_Click" Content="Add"/>
-                            <Button x:Name="Button2Btn" Height="23" HorizontalAlignment="Left" Margin="20,0" Width="75" Click="Button2_Click" Content="Clear"/>
+                    <DockPanel LastChildFill="True" Loaded="InitializeMainHall">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="20,12">
+                            <Label Content="楼层" Margin="10" FontWeight="Bold" FontSize="20"/>
+                            <Label x:Name="FloorLbl" Content="1 楼" Width="70" Margin="10" FontWeight="Bold" FontSize="20"/>
+                            <Label Content="选择楼层：" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="SelectFloorCbx" SelectionChanged="LoadFloor" SelectedIndex="0" Width="80" Height="25"/>
+                            <Button x:Name="Button1Btn" Height="23" HorizontalAlignment="Left" Width="75" Click="LoadFloor" Content="重新加载" Margin="50,0,0,0" Background="{x:Null}"/>
+                            <Button x:Name="Button2Btn" Height="23" HorizontalAlignment="Left" Margin="20,0" Width="75" Click="Button2_Click" Content="清除" Background="{x:Null}"/>
                         </StackPanel>
-                        <Grid Margin="20,0">
-                            <WrapPanel x:Name="RoomsBox"/>
+                        <Grid x:Name="RoomsBox" Margin="30,0,30,30">
+                            <WrapPanel />
                         </Grid>
-                    </StackPanel>
+                    </DockPanel>
                 </Grid>
             </TabItem>
 
@@ -81,6 +85,14 @@
                                         <StackPanel Orientation="Horizontal">
                                             <Label x:Name="ContractsDetailsCreditCardNoLbl" Content="身份证：" Margin="72,8,5,0" Width="58"/>
                                             <TextBox x:Name="ContractsDetailsCreditCardNoTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="ContractsDetailsCompanyNoLbl" Content="公司：" Margin="84,8,5,0" Width="46"/>
+                                            <TextBox x:Name="ContractsDetailsConpanyTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label x:Name="ContractsDetailsAddrNoLbl" Content="地址：" Margin="84,8,5,0" Width="46"/>
+                                            <TextBox x:Name="ContractsDetailsAddrTbx" Height="23" Margin="0,8,0,0" TextWrapping="Wrap" Width="238" IsEnabled="False"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Label x:Name="ContractsDetailsPhoneNumberLbl_Copy" Content="国际区号(+xx)：" Margin="31,8,5,0" Width="99"/>
@@ -158,11 +170,11 @@
                             <Button x:Name="CheckInCheckOutCancelBtn" Content="取消订单" Click="CancelBtn_Click" Width="125" Background="{x:Null}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
-                            <TextBox x:Name="CheckInCheckOutSearchTbx" Height="23" Margin="10,20,10,0" TextWrapping="Wrap" Width="133"/>
+                            <TextBox x:Name="CheckInCheckOutSearchTbx" Height="23" Margin="0,20,10,0" TextWrapping="Wrap" Width="133"/>
                             <Button x:Name="CheckInCheckOutSearchByNameBtn" Content="搜索姓名" Margin="0,20,10,0" Click="SearchByNameBtn_Click" Width="110" Background="{x:Null}"/>
                             <Button x:Name="CheckInCheckOutSearchByResNoBtn" Content="搜索订单号" Margin="0,20,10,0" Click="SearchByResNoBtn_Click" Width="110" Background="{x:Null}"/>
                             <Button x:Name="CheckInCheckOutSearchByRoomBtn" Content="搜索房间号" Margin="20,20,10,0" Click="SearchByRoomBtn_Click" Width="110" Background="{x:Null}"/>
-                            <Button x:Name="CheckInCheckOutAllBtn" Content="所有订单" Margin="0,20,10,0" Click="AllBtn_Click" Width="110" Background="Snow"/>
+                            <Button x:Name="CheckInCheckOutAllBtn" Content="所有订单" Margin="0,20,0,0" Click="AllBtn_Click" Width="110" Background="Snow"/>
                         </StackPanel>
                         <DataGrid x:Name="CheckInCheckOutDataGrid" IsReadOnly="True" FrozenColumnCount="1"/>
                     </DockPanel>
@@ -174,7 +186,7 @@
                     <TabControl x:Name="ManageSelectTab">
                         <TabItem x:Name="RoomsManagementTab" Header="房间管理" VerticalAlignment="Bottom" Width="100" Height="25">
                             <Grid Background="#FFE5E5E5">
-                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10">
+                                <Grid VerticalAlignment="Stretch" Margin="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="3*"/>
                                         <ColumnDefinition Width="2*"/>
@@ -221,11 +233,57 @@
                                 </Grid>
                             </Grid>
                         </TabItem>
-                        <TabItem x:Name="CustomerRegistryTab" Header="查询旅客" VerticalAlignment="Bottom" Width="100" Height="25">
-                            <Grid Background="#FFE5E5E5"/>
+                        <TabItem x:Name="StatisticsTab" Header="数据统计" VerticalAlignment="Bottom" Width="100" Height="25">
+                            <Grid Background="#FFE5E5E5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="收入统计" Grid.Column="0" Margin="20">
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="旅馆总收入：  "/>
+                                            <Label Content="1200"/>
+                                            <Button Content="查询" Width="50" Margin="100,0,0,0"/>
+                                        </StackPanel><StackPanel Orientation="Horizontal">
+                                            <Label Content="当前月收入：  "/>
+                                            <Label Content="1200"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                                <GroupBox Header="流量统计" Grid.Column="1" Margin="20">
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="当前入住率：  "/>
+                                            <Label Content="3 / 15 (20.0%)"/>
+                                            <Button Content="查询" Width="50" Margin="80,0,0,0"/>
+                                        </StackPanel><StackPanel Orientation="Horizontal">
+                                            <Label Content="当日流量：     "/>
+                                            <Label Content="19人次"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="平均流量：     "/>
+                                            <Label Content="16 / 天"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                            </Grid>
                         </TabItem>
-                        <TabItem x:Name="ReservationRegistryTab" Header="查询订单" VerticalAlignment="Bottom" Width="100" Height="25">
-                            <Grid Background="#FFE5E5E5"/>
+                        <TabItem x:Name="LogTab" Header="日志" VerticalAlignment="Bottom" Loaded="LogLoaded" Width="100" Height="25">
+                            <Grid Background="#FFE5E5E5">
+                                <DockPanel LastChildFill="True">
+                                    <StackPanel Orientation="Vertical" DockPanel.Dock="Right" Margin="10,10">
+                                        <Label Content="开始日期："/>
+                                        <DatePicker x:Name="LogStartDay" Width="100"/>
+                                        <Label Content="结束日期：" Margin="0,10,0,0"/>
+                                        <DatePicker x:Name="LogEndDay" Width="100"/>
+                                        <Button Content="检索" Click="LogSearch_Click" Margin="0,20,0,0" Height="25"/>
+                                        <Button Content="备份" Click="LogBackup_Click" Margin="0,80,0,0" Height="25"/>
+                                        <Button Content="加载备份" Click="LogLoadBackup_Click" Margin="0,20,0,0" Height="25"/>
+                                    </StackPanel>
+                                    <DataGrid x:Name="LogDataGrid" FrozenColumnCount="1" IsReadOnly="True" Margin="10,10,10,30"/>
+                                </DockPanel>
+                            </Grid>
                         </TabItem>
                     </TabControl>
                 </Grid>

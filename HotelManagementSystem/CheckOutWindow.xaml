@@ -61,8 +61,6 @@
             <GroupBox Header="该订单其它离店房间" Margin="0,5">
                 <StackPanel x:Name="checkOutRoomsList" Orientation="Horizontal" Margin="10">
                     <CheckBox x:Name="CbxSelectAll" Content="全选" Margin="5,0,15,0"/>
-                    <CheckBox Content="B103" IsChecked="True" Margin="5,0"/>
-                    <CheckBox Content="B104" Margin="5,0"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="消费信息" Margin="0,5">
@@ -82,7 +80,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label x:Name="otherPaymentLbl" Content="其它消费：" Margin="0,0,5,0"/>
-                            <TextBox x:Name="otherPayment" Width="100" Height="23"/>
+                            <TextBox x:Name="otherPayment" TextChanged="CalculatePrice" Width="100" Height="23"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Grid.Column="1">

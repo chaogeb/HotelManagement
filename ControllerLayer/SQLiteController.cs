@@ -64,8 +64,11 @@ namespace ControllerLayer
             cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Clock(TIME varchar, COUNTROOM varchar, COUNTCUSTOMER varchar,COUNTBOOKING varchar,COUNTRESERVE varchar );";//建表语句   
             cmdCreateTable.ExecuteNonQuery();   //如果表不存在，创建数据表
 
-            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS RoomPrice(RTYPE varchar, RPRICE varchar );";//建表语句   
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS RoomPrice(RTYPE varchar, RPRICE varchar );";
             cmdCreateTable.ExecuteNonQuery();   //如果表不存在，创建数据表
+
+            cmdCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS Log(DATETIME varchar, LOGTEXT varchar);";
+            cmdCreateTable.ExecuteNonQuery();
 
             sqlCon.Close();
         }
@@ -510,7 +513,7 @@ namespace ControllerLayer
             //cmd.Parameters.AddWithValue("THISPRICE", booking.ThisPrice);
             cmd.Parameters.AddWithValue("ROOMID", booking.RoomID);
             //cmd.Parameters.AddWithValue("RESERVATIONID", booking.ReservationID);
-            cmd.Parameters.AddWithValue("BSTATUS", booking.BStatus);
+            cmd.Parameters.AddWithValue("BSTATUS", booking.BStatus.ToString());
 
             try
             {
@@ -845,6 +848,60 @@ namespace ControllerLayer
                 disconnect();
             }
         }
+        #endregion
+
+        #region Log Procedures
+
+        internal void CreateLog(string logtext)
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO Log VALUES (@DATETIME, @LOGTEXT)", sqlCon);
+            cmd.Parameters.AddWithValue("@DATETIME", IClock.Time.ToFileTime());
+            cmd.Parameters.AddWithValue("@LOGTEXT", logtext);
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not add Log to database!\n" + ex.Message);
+            }
+            finally
+            {
+                disconnect();
+            }
+        }
+
+        internal List<Log> GetLogs()
+        {
+            connect();
+            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Log", sqlCon);
+            SQLiteDataReader rdr = cmd.ExecuteReader();
+
+            List<Log> logs = new List<Log>();
+            try
+            {
+                while (rdr.Read())
+                {
+                    logs.Add(new Log(
+                            DateTime.FromFileTime(long.Parse(rdr["DATETIME"].ToString())),
+                            rdr["LOGTEXT"].ToString()
+                        ));
+                }
+                return logs;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to parse/create new log!\n" + ex.Message);
+            }
+            finally
+            {
+                rdr.Close();
+                disconnect();
+            }
+        }
+        
         #endregion
     }
 }
