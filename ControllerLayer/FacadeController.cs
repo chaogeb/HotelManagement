@@ -43,6 +43,8 @@ namespace ControllerLayer
                 {
                     if (bk.RoomID != "")
                     {   // room id exists
+                        IRoom rm = hotelCon.GetRoom(bk.RoomID);
+                        if (rm.RStatus != RoomStatus.NA)
                         if (bk.EndDate.Date == IClock.Time.Date && IClock.Time.Hour >= 12)
                         {
                             MessageBox.Show("房间" + hotelCon.GetRoom(bk.RoomID).RoomNum
@@ -144,12 +146,7 @@ namespace ControllerLayer
         #endregion
 
         #region Customer Methods
-
-        public void CheckInCustomer(ICustomer customer)
-        {
-            //customerCon.CheckInCustomer(customer);
-        }
-
+        
         public ICustomer CreateCustomer(string name, CustomerGender? gender, int? age, string phone, string fax, string idcard, string roomid, string company, string address)
         {
             if (gender == null) gender = CustomerGender.Male;

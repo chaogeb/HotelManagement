@@ -549,6 +549,12 @@ namespace HotelManagementSystem
                 MessageBox.Show("请选择一个订单！");
                 return;
             }
+            IBooking bk = CheckInCheckOutDataGrid.SelectedItem as IBooking;
+            if (bk.RoomID != "")
+            {
+                MessageBox.Show("订单已入住！");
+                return;
+            }
             CheckInWindow checkinWin = new CheckInWindow((CheckInCheckOutDataGrid.SelectedItem as IBooking).ID);
             checkinWin.ShowDialog();
         }
@@ -561,11 +567,23 @@ namespace HotelManagementSystem
             }
             else if (searchbyRooms)
             {
+                IRoom rm = CheckInCheckOutDataGrid.SelectedItem as IRoom;
+                if (rm.RStatus != RoomStatus.Occupied)
+                {
+                    MessageBox.Show("房间没有人入住！");
+                    return;
+                }
                 CheckOutWindow checkoutWin = new CheckOutWindow(CheckInCheckOutDataGrid.SelectedItem as IRoom);
                 checkoutWin.ShowDialog();
             }
             else if (!searchbyRooms)
             {
+                IBooking bk = CheckInCheckOutDataGrid.SelectedItem as IBooking;
+                if (bk.RoomID == "")
+                {
+                    MessageBox.Show("未入住，不能离店！");
+                    return;
+                }
                 CheckOutWindow checkoutWin = new CheckOutWindow((CheckInCheckOutDataGrid.SelectedItem as IBooking).ID);
                 checkoutWin.ShowDialog();
             }
@@ -729,10 +747,12 @@ namespace HotelManagementSystem
                 return;
             facade.UpdateRoomPrice((RoomType)ManageRoomPriceCombo.SelectedIndex, double.Parse(ManageRoomPriceTbx.Text.ToString()));
         }
-        private void ManageRoomPriceCombo_Changed(object sender, RoutedEventArgs e)
+        //private void ManageRoomPriceCombo_Changed(object sender, RoutedEventArgs e)
+        private void ManageRoomPriceCombo_Changed(object sender, SelectionChangedEventArgs e)
         {
             IRoomPrice roomprice = facade.GetRoomPrice((RoomType)ManageRoomPriceCombo.SelectedItem);
-            ManageRoomPriceTbx.Text = roomprice.Price.ToString();
+            if (roomprice != null)
+                ManageRoomPriceTbx.Text = roomprice.Price.ToString();
         }
 
         private void LogLoaded(object sender, RoutedEventArgs e)
@@ -779,6 +799,6 @@ namespace HotelManagementSystem
             }
             return file;
         }
-
+        
     }
 }

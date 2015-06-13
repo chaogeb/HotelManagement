@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Linq;
 using System.Text;
 using Interface;
@@ -94,7 +95,13 @@ namespace ControllerLayer
                 }
                 if (foundroom == false)
                 {
-                    avaliablerooms.Add(new AvaliableRoom(room.RType, dbCon.GetRoomPrice(room.RType).Price));
+                    IRoomPrice rmp = dbCon.GetRoomPrice(room.RType);
+                    if (rmp == null)
+                    {
+                        MessageBox.Show("房间价格未初始化！", "查询价格错误");
+                        return avaliablerooms;
+                    }
+                    avaliablerooms.Add(new AvaliableRoom(room.RType, rmp.Price));
                 }
             }
 
