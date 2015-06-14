@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using ControllerLayer;
 using Interface;
@@ -18,8 +12,7 @@ using Interface;
 namespace HotelManagementSystem
 {
     /// <summary>
-    /// Made by Chaoge Zheng
-    /// MainWindow.xaml 的交互逻辑
+    /// Made by chaogeb
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -71,6 +64,7 @@ namespace HotelManagementSystem
             timer.Interval = new TimeSpan(0, 0, 0, 0, 50); //50
             timer.Start();
         }
+
         private void timer_Tick(object sender, EventArgs e)
         {
             if (Mouse.LeftButton == MouseButtonState.Pressed)
@@ -106,6 +100,10 @@ namespace HotelManagementSystem
         {
             InitializeMainHall();
         }
+
+        /// <summary>
+        /// Load rooms GUI in the Main Hall tab
+        /// </summary>
         private void InitializeMainHall()
         {
             List<IRoom> rooms = facade.GetRooms();
@@ -128,14 +126,17 @@ namespace HotelManagementSystem
             SelectFloorCbx.DisplayMemberPath = "Value";
             SelectFloorCbx.SelectedIndex = 0;
         }
+
         private void LoadFloor(object sender, RoutedEventArgs e)
         {
             LoadFloor(SelectFloorCbx.SelectedIndex);
         }
+
         private void LoadFloor(object sender, SelectionChangedEventArgs e)
         {
             LoadFloor(SelectFloorCbx.SelectedIndex);
         }
+
         private void LoadFloor(int floor)
         {
             FloorLbl.Content = (SelectFloorCbx.SelectedIndex + 1) + " 楼";
@@ -175,22 +176,7 @@ namespace HotelManagementSystem
             }
 
         }
-
-        private void Btn_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Button1_Click(object sender, RoutedEventArgs e)
-        {
-            Button bt = new Button()
-            {
-                Width = 80,
-                Height = 60
-            };
-            bt.Margin = new Thickness(5,5,5,5);
-            RoomsBox.Children.Add(bt);
-        }
+        
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             RoomsBox.Children.Clear();
@@ -203,6 +189,7 @@ namespace HotelManagementSystem
         {
             refreshTabsStatus();
         }
+
         private void refreshTabsStatus()
         {
             if (RecieptTab.IsSelected == true)
@@ -238,6 +225,7 @@ namespace HotelManagementSystem
             RoomsDataGrid.ItemsSource = facade.GetAvailableRooms(roomType, StartDatePicker.SelectedDate, EndDatePicker.SelectedDate);
             //DataGridComboBoxColumn.it
         }
+
         private void CheckAvailabilityBtn_Click(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show(((DateTime)StartDatePicker.SelectedDate).ToLongDateString());
@@ -464,6 +452,7 @@ namespace HotelManagementSystem
         #endregion
 
         #region CheckIn/CheckOut Tab
+
         private void SearchByNameBtn_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(CheckInCheckOutSearchTbx.Text))
@@ -487,6 +476,7 @@ namespace HotelManagementSystem
                 }
             }
         }
+
         private void SearchByResNoBtn_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(CheckInCheckOutSearchTbx.Text))
@@ -510,6 +500,7 @@ namespace HotelManagementSystem
                 }
             }
         }
+
         private void SearchByRoomBtn_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(CheckInCheckOutSearchTbx.Text))
@@ -533,6 +524,7 @@ namespace HotelManagementSystem
                 }
             }
         }
+
         private void AllBtn_Click(object sender, RoutedEventArgs e)
         {
             searchbyRooms = false;
@@ -542,6 +534,7 @@ namespace HotelManagementSystem
                 MessageBox.Show("没有找到订单");
             }
         }
+
         private void CheckInBtn_Click(object sender, RoutedEventArgs e)
         {
             if (CheckInCheckOutDataGrid.SelectedItem == null)
@@ -558,6 +551,7 @@ namespace HotelManagementSystem
             CheckInWindow checkinWin = new CheckInWindow((CheckInCheckOutDataGrid.SelectedItem as IBooking).ID);
             checkinWin.ShowDialog();
         }
+
         private void CheckOutBtn_Click(object sender, RoutedEventArgs e)
         {
             if (CheckInCheckOutDataGrid.SelectedItem == null)
@@ -588,6 +582,7 @@ namespace HotelManagementSystem
                 checkoutWin.ShowDialog();
             }
         }
+
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             if (CheckInCheckOutDataGrid.SelectedItem == null)
@@ -644,10 +639,12 @@ namespace HotelManagementSystem
         {
             UpdateManageRoomDataGrid();
         }
+
         private void UpdateManageRoomDataGrid()
         {
             ManageRoomDataGrid.ItemsSource = facade.GetRooms();
         }
+
         private void UpdateManageRoomGroup(string RoomID)
         {
             IRoom room = facade.GetRoom(RoomID);
@@ -655,12 +652,14 @@ namespace HotelManagementSystem
             ManageRoomNum.Text = room.RoomNum;
             ManageRoomTypeCombo.SelectedIndex = (int)room.RType;
         }
+
         private void ResetManageRoomGroup()
         {
             ManageRoomID.Content = "0";
             ManageRoomNum.Text = "";
             ManageRoomTypeCombo.SelectedIndex = -1;
         }
+
         private void ManageRoomDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if ((selectedRoom = (ManageRoomDataGrid.SelectedValue as IRoom)) != null)
@@ -675,11 +674,13 @@ namespace HotelManagementSystem
                 ResetManageRoomGroup();
             }
         }
+
         private void ManageRoomAddRadio_Click(object sender, RoutedEventArgs e)
         {
             ManageRoomDelete.IsEnabled = false;
             ResetManageRoomGroup();
         }
+
         private void ManageRoomChangeRadio_Click(object sender, RoutedEventArgs e)
         {
             ManageRoomDelete.IsEnabled = true;
@@ -705,6 +706,7 @@ namespace HotelManagementSystem
                 UpdateManageRoomDataGrid();
             }
         }
+
         private void ManageRoomSave_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -741,13 +743,14 @@ namespace HotelManagementSystem
         {
             ManageRoomPriceCombo.SelectedItem = rtype;
         }
+
         private void ManageRoomPriceSave_Click(object sender, RoutedEventArgs e)
         {
             if (ManageRoomPriceCombo.SelectedIndex == -1 || ManageRoomPriceTbx.Text == "")
                 return;
             facade.UpdateRoomPrice((RoomType)ManageRoomPriceCombo.SelectedIndex, double.Parse(ManageRoomPriceTbx.Text.ToString()));
         }
-        //private void ManageRoomPriceCombo_Changed(object sender, RoutedEventArgs e)
+
         private void ManageRoomPriceCombo_Changed(object sender, SelectionChangedEventArgs e)
         {
             IRoomPrice roomprice = facade.GetRoomPrice((RoomType)ManageRoomPriceCombo.SelectedItem);
@@ -759,6 +762,7 @@ namespace HotelManagementSystem
         {
             LogDataGrid.ItemsSource = facade.GetLogs();
         }
+
         private void LogSearch_Click(object sender, RoutedEventArgs e)
         {
             LogDataGrid.ItemsSource = facade.GetLogs(LogStartDay.SelectedDate, LogEndDay.SelectedDate);

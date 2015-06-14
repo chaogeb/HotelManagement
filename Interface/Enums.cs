@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-// Made by chaogeb
+﻿// Made by chaogeb
 namespace Interface
 {
     public enum CustomerGender
@@ -11,14 +6,16 @@ namespace Interface
         Male,
         Female
     }
-    //订单状态
+
+    // Booking status
     public enum BookStatus
     {
         Confirmed,  // 确认
         Timeout,    // 超时
         Canceled    // 取消
     }
-    // 结算状态
+
+    // Reservation status
     public enum ReservationStatus
     {
         Booked,     // 确认
@@ -26,14 +23,16 @@ namespace Interface
         Canceled,   // 取消
         Paid        // 已付
     }
-    //房间状态
+
+    // Room status
     public enum RoomStatus
     {
         Idle,       // 空闲
         Occupied,   // 入住
         NA          // Not Available
     }
-    //房间类型
+
+    // Room type
     public enum RoomType
     {
         Junior,

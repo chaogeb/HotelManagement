@@ -12,6 +12,9 @@ using System.Data.SQLite;
 /// </summary>
 namespace ControllerLayer
 {  
+    /// <summary>
+    /// Made by 廖开翔 & chaogeb
+    /// </summary>
     internal class SQLiteController
     {
         #region Misc
@@ -71,23 +74,6 @@ namespace ControllerLayer
             cmdCreateTable.ExecuteNonQuery();
 
             sqlCon.Close();
-        }
-
-        internal bool Authenticated()
-        {
-            try
-            {
-                sqlCon.Open();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                sqlCon.Close();
-            }
         }
         #endregion
 
@@ -702,38 +688,7 @@ namespace ControllerLayer
             }
             return GetRoomPrice(rType);
         }
-
-        internal List<IRoomPrice> GetRoomPrices()
-        {
-            connect();
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM RoomPrice", sqlCon);
-            
-            List<IRoomPrice> roomprice = new List<IRoomPrice>();
-            try
-            {
-                SQLiteDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
-                {
-                    roomprice.Add(new RoomPrice
-                    (
-                        (RoomType)Enum.Parse(typeof(RoomType), rdr["BTYPE"].ToString()),
-                        double.Parse(rdr["RPRICE"].ToString())
-                    ));
-                }
-                rdr.Close();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Could not parse roomprice!\n" + ex.Message);
-            }
-            finally
-            {
-                disconnect();
-            }
-            return roomprice;
-        }
-
+        
         internal IRoomPrice UpdateRoomPrice(IRoomPrice roomprice)
         {
             connect();

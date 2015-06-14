@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Interface
+﻿namespace Interface
 {
     public interface IReservation
     {

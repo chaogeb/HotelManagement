@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Interface;
-using Model;
 
 namespace ControllerLayer
 {
+    /// <summary>
+    /// Made by Chaoge Zheng
+    /// </summary>
     internal class LogController
     {
         private SQLiteController dbCon;

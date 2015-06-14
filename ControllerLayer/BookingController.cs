@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Interface;
 using Model;
 
 namespace ControllerLayer
 {
+    /// <summary>
+    /// Made by strongman1995
+    /// </summary>
     internal class BookingController
     {
         private SQLiteController dbCon;
         private HotelController hCon;
         private LogController LCon;
+
         internal BookingController(SQLiteController db,HotelController h, LogController l)
         {
             dbCon = db;
@@ -20,15 +23,18 @@ namespace ControllerLayer
         }
         
         #region Customer 
+
         internal ICustomer CreateCustomer(string name, CustomerGender gender, int age, string phone, string fax, string idcard,string roomid, string company, string address)
         {
             var customer = new Customer();
             return dbCon.CreateCustomer(customer.ID, name, gender, age,phone, fax, idcard, roomid, company, address);
         }
+
         internal ICustomer GetCustomer(string customerID)
         {
             return dbCon.GetCustomer(customerID);
         }
+
         internal List<ICustomer> GetCustomers()
         {
             return dbCon.GetCustomers();
@@ -37,8 +43,6 @@ namespace ControllerLayer
         /// <summary>
         /// 通过电话擦找联系人
         /// </summary>
-        /// <param name="customerPhone"></param>
-        /// <returns></returns>
         internal ICustomer GetCustomerViaPhone(string customerPhone)
         { 
             var list = dbCon.GetCustomers(); 
@@ -74,6 +78,7 @@ namespace ControllerLayer
             LCon.Log_Booked(dbCon.GetCustomer(contractid), bookinglist);
             return bookinglist;
         }
+
         internal IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
         {
             IRoomPrice roomprice = dbCon.GetRoomPrice(roomtype);
@@ -93,6 +98,7 @@ namespace ControllerLayer
             }
             return bookings;
         }
+
         internal List<IBooking> GetActiveBookings()
         {
             List<IBooking> bookings = new List<IBooking>();
@@ -108,7 +114,6 @@ namespace ControllerLayer
         /// <summary>
         /// 取消单个booking
         /// </summary>
-        /// <param name="BookingID"></param>
         internal void CancelBooking(string BookingID)
         {
             IBooking book = dbCon.GetBooking(BookingID);
@@ -149,7 +154,6 @@ namespace ControllerLayer
         /// <summary>
         /// 取消reservationID的单，并且取消属于它的所有booking单
         /// </summary>
-        /// <param name="reservationID"></param>
         internal void CancelReservation(string reservationID)
         {
             IReservation reservation = dbCon.GetReservation(reservationID);

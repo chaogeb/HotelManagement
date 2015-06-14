@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Interface 
+﻿namespace Interface 
 {
     // Made by chaogeb
     public interface IRoom

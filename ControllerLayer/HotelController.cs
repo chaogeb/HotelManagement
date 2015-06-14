@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Linq;
-using System.Text;
 using Interface;
 using Model;
 
-
 namespace ControllerLayer
 {
+    /// <summary>
+    /// Made by strongman1995
+    /// </summary>
     internal class HotelController
     {
         private SQLiteController dbCon;
 
-        //Initializes a HotelController.r
+        //Initializes a HotelController
         internal HotelController(SQLiteController db)
-        {//初始化
+        {
             dbCon = db;
         }
 
@@ -65,16 +65,7 @@ namespace ControllerLayer
         {
             return dbCon.UpdateRoom(room);
         }
-
-
-        // Checks in the customer. By changing CStatus and RStatus on the rooms booked.
-        internal IRoom CheckInRoom(IRoom room)
-        {
-            room.RStatus = RoomStatus.Occupied;
-            return dbCon.UpdateRoom(room);
-        }
-
-
+        
         //Return a list of available room types
         internal List<IAvaliableRoom> GetAvailableRooms(RoomType? roomtype, DateTime? startdate, DateTime? enddate)
         {

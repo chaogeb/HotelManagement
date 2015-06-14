@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Interface
+﻿namespace Interface
 {
     // Made by chaogeb
     public interface ICustomer

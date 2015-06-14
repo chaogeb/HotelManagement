@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Interface;
 
 namespace Interface
 {
+    /// <summary>
+    /// Made by chaogeb
+    /// </summary>
     public class Log
     {
         public DateTime Time    { get; set; }

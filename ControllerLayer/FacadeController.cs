@@ -13,8 +13,7 @@ namespace ControllerLayer
         private LogController logCon;
 
         private static FacadeController instance;
-
-        //private FacadeController(string user, string pass)
+        
         private FacadeController()
         {
             dbCon = new SQLiteController();
@@ -22,13 +21,11 @@ namespace ControllerLayer
             logCon = new LogController(dbCon);
             customerCon = new BookingController(dbCon, hotelCon, logCon);
         }
-
-        //public static FacadeController GetInstance(string user, string pass)
+        
         public static FacadeController GetInstance()
         {
             if (instance == null)
             {
-                //instance = new FacadeController(user, pass);
                 instance = new FacadeController();
             }
             return instance;
@@ -76,16 +73,19 @@ namespace ControllerLayer
         {
             return customerCon.CreateReservation();
         }
+
         public IReservation GetReservation(string reservationID)
         {
             return customerCon.GetReservation(reservationID);
         }
+
         public IReservation ComfirmReservation(IReservation reserv, double downpayment)
         {
             reserv.RStatus = ReservationStatus.Booked;
             reserv.DownPayment = downpayment;
             return customerCon.UpdateReservation(reserv);
         }
+
         public IReservation UpdateReservation(IReservation reserv)
         {
             return customerCon.UpdateReservation(reserv);
@@ -99,17 +99,12 @@ namespace ControllerLayer
         {
             return customerCon.CreateBookings(selectedRoomList, startday, endday, reservetime, contractid, reservationid);
         }
-
-        public IBooking CreateBooking(DateTime start, DateTime end, string reservetime, string contractid, RoomType roomtype, string reservationid)
-        {
-            var booking = customerCon.CreateBooking(start, end, reservetime, contractid, roomtype, reservationid);
-            SetClock();
-            return booking;
-        }
+        
         public IBooking UpdateBooking(IBooking book)
         {
             return dbCon.UpdateBooking(book);
         }
+
         public IBooking GetBooking(string bookingID)
         {
             return dbCon.GetBooking(bookingID);
@@ -118,8 +113,6 @@ namespace ControllerLayer
         /// 返回非取消状态的订单列表
         /// 标记 reservationID 为 null 时不标记
         /// </summary>
-        /// <param name="reservationID"></param>
-        /// <returns></returns>
         public List<IBooking> GetActiveBookings(string reservationID)
         {
             if (reservationID != null)
@@ -127,6 +120,7 @@ namespace ControllerLayer
             else
                 return customerCon.GetActiveBookings();
         }
+
         public List<IBooking> GetActiveBookingsViaName(string name)
         {
             var list = customerCon.GetActiveBookings();
@@ -139,6 +133,7 @@ namespace ControllerLayer
             }
             return temp;
         }
+
         public void CancelBooking(string BookingID)
         {
             customerCon.CancelBooking(BookingID);
@@ -164,11 +159,6 @@ namespace ControllerLayer
         public ICustomer GetCustomerViaPhone(string customerPhone)
         {
             return customerCon.GetCustomerViaPhone(customerPhone);
-        }
-
-        public List<ICustomer> GetCustomers()
-        {
-            return customerCon.GetCustomers();
         }
         
         public ICustomer UpdateCustomer(ICustomer cus)
@@ -221,18 +211,18 @@ namespace ControllerLayer
         {
             return hotelCon.UpdateRoomPrice(roomtype, price);
         }
+
         /// <summary>
         /// 获取指定房间类型的价格
         /// </summary>
-        /// <param name="roomtype"></param>
         public IRoomPrice GetRoomPrice(RoomType roomtype)
         {
             return hotelCon.GetRoomPrice(roomtype);
         }
+
         /// <summary>
         /// 获取指定房间号的价格
         /// </summary>
-        /// <param name="roomNum"></param>
         public IRoomPrice GetRoomPrice(string roomNum)
         {
             return hotelCon.GetRoomPrice(roomNum);
@@ -240,10 +230,6 @@ namespace ControllerLayer
         public List<IRoom> RefreshRooms(List<IRoom> roomList)
         {
             return hotelCon.RefreshRooms(roomList);
-        }
-        public IRoom RefreshRoom(IRoom room)
-        {
-            return hotelCon.RefreshRoom(room);
         }
         #endregion
 
@@ -260,26 +246,27 @@ namespace ControllerLayer
         #endregion
 
         #region Log Method
-        public void Log_Booked(ICustomer customer, List<IBooking> bookings)
-        {
-            logCon.Log_Booked(customer, bookings);
-        }
+
         public void Log_CheckIn(List<ICustomer> customers, IBooking booking)
         {
             logCon.Log_CheckIn(customers, booking);
         }
+
         public void Log_CheckOut(IBooking booking)
         {
             logCon.Log_CheckOut(booking);
         }
+
         public void Log_Cancel(IBooking booking)
         {
             logCon.Log_Cancel(booking);
         }
+
         public List<Log> GetLogs()
         {
             return logCon.GetLogs();
         }
+
         public List<Log> GetLogs(DateTime? start, DateTime? end)
         {
             var chosenlogs = new List<Log>();
